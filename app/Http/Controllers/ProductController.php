@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Controller voor het beheren van producten.
@@ -20,10 +22,15 @@ class ProductController extends Controller
      */
     public function index(Request $request): View|RedirectResponse
     {
+        $categorieId = $request->filled('categorie') ? (int) $request->input('categorie') : null;
+
+        $producten = $this->haalProductenOp($categorieId);
+        $paginator = $this->maakPaginatie($producten, $request, 4);
+
         return view('products.index', [
-            'producten' => collect(),
-            'categorieen' => collect(),
-            'geselecteerdeCategorieId' => null,
+            'producten' => $paginator,
+            'categorieen' => $this->haalActieveCategorieenOp(),
+            'geselecteerdeCategorieId' => $categorieId,
         ]);
     }
 
@@ -73,5 +80,39 @@ class ProductController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         abort(404);
+    }
+
+    /**
+     * Haal het productenoverzicht op via de stored procedure GetAllProducten.
+     *
+     * De aanroep gebruikt een prepared statement met parameterbinding,
+     * zodat SQL-injectie via het categorie-filter niet mogelijk is.
+     */
+    private function haalProductenOp(?int $categorieId): Collection
+    {
+        return collect(DB::select('CALL GetAllProducten(?)', [$categorieId]));
+    }
+
+    /**
+     * Haal de actieve categorieën op voor het filter-dropdownmenu.
+     */
+    private function haalActieveCategorieenOp(): Collection
+    {
+        return collect(DB::select('SELECT Id, Naam FROM Categorie WHERE IsActief = 1 ORDER BY Naam ASC'));
+    }
+
+    /**
+     * Bouw een paginator op basis van een collectie.
+     */
+    private function maakPaginatie(Collection $items, Request $request, int $perPagina): LengthAwarePaginator
+    {
+        $huidigePagina = LengthAwarePaginator::resolveCurrentPage();
+        $totaal = $items->count();
+        $resultaten = $items->slice(($huidigePagina - 1) * $perPagina, $perPagina)->values();
+
+        return new LengthAwarePaginator($resultaten, $totaal, $perPagina, $huidigePagina, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]);
     }
 }
