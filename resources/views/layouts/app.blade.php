@@ -38,7 +38,7 @@
                         <li class="nav-item"><a class="nav-link" href="#">Klanten</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Afspraken</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Behandelingen</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Producten</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Producten</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('bestellingen.index') }}">Bestellingen</a></li>
                     </ul>
                     <div class="d-flex align-items-center gap-3 text-white">
