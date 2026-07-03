@@ -1,44 +1,45 @@
 @extends('layouts.app')
 
-@section('title', 'Overzicht behandelingen')
+@section('title', 'Overzicht bestellingen')
 
 @section('content')
+    {{-- Breadcrumb en titel staan bewust boven de witte kaarten, op de grijze pagina-achtergrond (wireframe-02) --}}
     <nav aria-label="breadcrumb" class="mb-2">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Behandelingen</li>
+            <li class="breadcrumb-item active" aria-current="page">Bestellingen</li>
         </ol>
     </nav>
 
-    <h1 class="h3 titel-kniploket mb-3">Overzicht behandelingen</h1>
+    <h1 class="h3 titel-kniploket mb-3">Overzicht bestellingen</h1>
 
-    {{-- Filterkaart --}}
+    {{-- Witte kaart met het statusfilter, rechts uitgelijnd (wireframe-02) --}}
     <div class="card shadow-sm mb-3">
         <div class="card-body">
-            <form method="GET" action="{{ route('behandelingen.index') }}">
+            <form method="GET" action="{{ route('bestellingen.index') }}">
                 <div class="d-flex align-items-end gap-2 flex-wrap justify-content-end">
                     <div>
                         <label for="status" class="form-label mb-1">Status selecteren</label>
+                        {{-- De option-values zijn de exacte databasewaarden (bijv. Inverwerking);
+                             alleen de zichtbare labels tonen de leesbare tekst (bijv. In verwerking). --}}
                         <select id="status" name="status" class="form-select">
-                            <option value="Alle behandelingen" @selected($geselecteerdeStatus === 'Alle behandelingen')>Alle
-                                behandelingen</option>
+                            <option value="Alle statussen" @selected($geselecteerdeStatus === 'Alle statussen')>Alle statussen</option>
                             @foreach ($statusLabels as $statusWaarde => $statusLabel)
-                                <option value="{{ $statusWaarde }}" @selected($geselecteerdeStatus == $statusWaarde)>
-                                    {{ $statusLabel }}</option>
+                                <option value="{{ $statusWaarde }}" @selected($geselecteerdeStatus === $statusWaarde)>{{ $statusLabel }}</option>
                             @endforeach
                         </select>
                     </div>
                     <button type="submit" class="btn btn-danger">Maak selectie</button>
-                    <a href="{{ route('behandelingen.index') }}" class="btn btn-secondary">Reset</a>
+                    <a href="{{ route('bestellingen.index') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </form>
         </div>
     </div>
 
-    {{-- Tabelkaart --}}
+    {{-- Witte kaart met teltekst, gecentreerde paginering en de tabel (wireframe-02) --}}
     <div class="card shadow-sm">
         <div class="card-body">
-            <p class="text-muted small mb-2">Gevonden behandelingen - {{ $bestellingen->total() }} behandeling(en)</p>
+            <p class="text-muted small mb-2">Gevonden bestellingen - {{ $bestellingen->total() }} bestelling(en)</p>
 
             {{ $bestellingen->links('pagination.kniploket') }}
 
@@ -46,36 +47,35 @@
                 <table class="table align-middle mb-0">
                     <thead class="tabel-header-kniploket">
                         <tr>
-                            <th>Behandeling</th>
-                            <th>Omschrijving</th>
-                            <th>Duur (Min)</th>
-                            <th>Datum Aangemaakt</th>
+                            <th>Bestelnr.</th>
+                            <th>Klant</th>
+                            <th>Relatienr.</th>
+                            <th>Datum</th>
+                            <th>Tijd</th>
                             <th>Status</th>
-                            <th>Prijs</th>
+                            <th>Producten</th>
+                            <th>Totaal</th>
                             <th>Actie</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($bestellingen as $behandeling)
+                        @forelse ($bestellingen as $bestelling)
                             <tr>
-                                <td><strong>{{ $behandeling->BestelNummer }}</strong></td>
-                                <td>{{ $behandeling->KlantNaam }}</td>
-                                <td>{{ $behandeling->Relatienummer }} min</td>
-                                <td>{{ \Illuminate\Support\Carbon::parse($behandeling->Datum)->format('d-m-Y') }}</td>
+                                <td>{{ $bestelling->BestelNummer }}</td>
+                                <td>{{ $bestelling->KlantNaam }}</td>
+                                <td>{{ $bestelling->Relatienummer }}</td>
+                                <td>{{ \Illuminate\Support\Carbon::parse($bestelling->Datum)->format('d-m-Y') }}</td>
+                                <td>{{ substr((string) $bestelling->Tijd, 0, 5) }}</td>
+                                <td>{{ $statusLabels[$bestelling->Bestelstatus] ?? $bestelling->Bestelstatus }}</td>
+                                <td>{{ $bestelling->AantalProducten }}</td>
+                                <td>EUR {{ number_format((float) $bestelling->Totaal, 2, ',', '.') }}</td>
                                 <td>
-                                    <span class="badge {{ $behandeling->Bestelstatus ? 'bg-success' : 'bg-secondary' }}">
-                                        {{ $statusLabels[$behandeling->Bestelstatus] ?? 'Onbekend' }}
-                                    </span>
-                                </td>
-                                <td>EUR {{ number_format((float) $behandeling->Totaal, 2, ',', '.') }}</td>
-                                <td>
-                                    <a href="{{ route('behandelingen.show', $behandeling->BestellingId) }}"
-                                        class="btn btn-outline-primary btn-sm">Details</a>
+                                    <a href="{{ route('bestellingen.show', $bestelling->BestellingId) }}" class="btn btn-outline-primary btn-sm">Producten</a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4">Er zijn geen behandelingen bekend met deze status</td>
+                                <td colspan="9" class="text-center py-4">Er zijn geen bestellingen bekend met deze status</td>
                             </tr>
                         @endforelse
                     </tbody>
