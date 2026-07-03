@@ -23,9 +23,9 @@
                         'Beschikbaarheid' => ['omschrijving' => 'Bekijk de beschikbaarheid van medewerkers per dag en tijd.', 'url' => '#'],
                         'Klanten' => ['omschrijving' => 'Bekijk en filter klantgegevens op postcode en contactinformatie.', 'url' => '#'],
                         'Afspraken' => ['omschrijving' => 'Plan, bekijk en beheer afspraken met status en tijd.', 'url' => '#'],
-                        'Behandelingen' => ['omschrijving' => 'Overzicht van behandelingen, duur en prijsinformatie.', 'url' => '#'],
+                        'Behandelingen' => ['omschrijving' => 'Overzicht van behandelingen, duur en prijsinformatie.', 'url' => route('behandelingen.index')],
                         'Producten' => ['omschrijving' => 'Bekijk en beheer producten binnen het assortiment.', 'url' => '#'],
-                        'Bestellingen' => ['omschrijving' => 'Bekijk en beheer klantbestellingen en bestelstatus.', 'url' => '#'],
+                        'Bestellingen' => ['omschrijving' => 'Bekijk en beheer klantbestellingen en bestelstatus.', 'url' => route('bestellingen.index')],
                     ];
                 @endphp
 

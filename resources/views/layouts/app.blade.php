@@ -95,7 +95,7 @@
                         <li class="nav-item"><a class="nav-link" href="#">Afspraken</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('behandelingen.index') }}">Behandelingen</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Producten</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Bestellingen</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('bestellingen.index') }}">Bestellingen</a></li>
                     </ul>
                     {{-- text-nowrap: deze tekst mag nooit over twee regels breken (wireframe-01) --}}
                     <span class="navbar-text text-white text-nowrap me-2">Salon Eigenaar (eigenaar)</span>
