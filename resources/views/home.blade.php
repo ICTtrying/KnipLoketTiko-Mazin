@@ -18,19 +18,11 @@
                     @php
                     /** @var array<string, array{omschrijving: string, url: string}> $modules Weergavelijst van de dashboardkaarten uit wireframe-01 */
                     $modules = [
-<<<<<<< HEAD
-                        'Accounts' => ['omschrijving' => 'Beheer gebruikersaccounts en roltoewijzigingen.', 'url' => route('accounts.index')],
-                        'Medewerkers' => ['omschrijving' => 'Overzicht van medewerkers en hun basisgegevens.', 'url' => route('medewerkers.index')],
-                        'Beschikbaarheid' => ['omschrijving' => 'Bekijk de beschikbaarheid van medewerkers per dag en tijd.', 'url' => route('beschikbaarheid.index')],
-                        'Klanten' => ['omschrijving' => 'Bekijk en filter klantgegevens op postcode en contactinformatie.', 'url' => route('klanten.index')],
-                        'Afspraken' => ['omschrijving' => 'Plan, bekijk en beheer afspraken met status en tijd.', 'url' => route('afspraken.index')],
-=======
                         'Accounts' => ['omschrijving' => 'Beheer gebruikersaccounts en roltoewijzigingen.', 'url' => '#'],
                         'Medewerkers' => ['omschrijving' => 'Overzicht van medewerkers en hun basisgegevens.', 'url' => '#'],
                         'Beschikbaarheid' => ['omschrijving' => 'Bekijk de beschikbaarheid van medewerkers per dag en tijd.', 'url' => '#'],
                         'Klanten' => ['omschrijving' => 'Bekijk en filter klantgegevens op postcode en contactinformatie.', 'url' => route('klanten.index')],
                         'Afspraken' => ['omschrijving' => 'Plan, bekijk en beheer afspraken met status en tijd.', 'url' => '#'],
->>>>>>> dd04b096d72a018f6fbc834b7cb0bd96c4d54d7f
                         'Behandelingen' => ['omschrijving' => 'Overzicht van behandelingen, duur en prijsinformatie.', 'url' => route('behandelingen.index')],
                         'Producten' => ['omschrijving' => 'Bekijk en beheer producten binnen het assortiment.', 'url' => route('products.index')],
                         'Bestellingen' => ['omschrijving' => 'Bekijk en beheer klantbestellingen en bestelstatus.', 'url' => route('bestellingen.index')],
