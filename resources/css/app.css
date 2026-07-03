@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
@@ -17,4 +18,14 @@
     --color-kniploket-secondary-dark: #5c636a;
     --color-kniploket-hover-row: #ececec;
     --color-kniploket-page-bg: #f5f7fb;
+}
+
+@layer components {
+    .titel-kniploket {
+        @apply font-bold text-kniploket-danger;
+    }
+
+    .tabel-header-kniploket {
+        @apply bg-slate-100;
+    }
 }

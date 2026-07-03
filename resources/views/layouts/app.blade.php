@@ -88,5 +88,15 @@
         <footer class="py-3 text-center text-sm text-slate-500">
             &copy; 2026 Kniploket Tiko - Alle rechten voorbehouden
         </footer>
+
+        {{-- Meldingen automatisch verwijderen na 3 seconden --}}
+        <script>
+            setTimeout(function () {
+                var alerts = document.querySelectorAll('[role="alert"]');
+                alerts.forEach(function (alert) {
+                    alert.remove();
+                });
+            }, 3000);
+        </script>
     </body>
 </html>

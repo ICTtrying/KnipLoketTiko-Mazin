@@ -54,15 +54,15 @@
 
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse text-sm">
-                    <thead class="border-b border-slate-300 bg-slate-50">
+                    <thead class="bg-kniploket-danger">
                         <tr>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Product</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Categorie</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Merk</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">EAN-code</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Verkoopprijs</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Voorraad</th>
-                            <th class="px-4 py-3 text-left font-semibold text-slate-900">Actie</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Product</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Categorie</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Merk</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">EAN-code</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Verkoopprijs</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Voorraad</th>
+                            <th class="px-4 py-3 text-left font-semibold text-white">Actie</th>
                         </tr>
                     </thead>
                     <tbody>

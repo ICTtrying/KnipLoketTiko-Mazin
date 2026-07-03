@@ -27,12 +27,12 @@ CREATE TABLE Klant (
     ,Tussenvoegsel VARCHAR(30) NULL
     ,Achternaam VARCHAR(100) NOT NULL
     ,Relatienummer VARCHAR(20) NOT NULL
-    ,Bijzonderheden VARCHAR(15) NOT NULL
+    ,Bijzonderheden VARCHAR(50) NOT NULL
     ,IsActief BIT NOT NULL DEFAULT 1
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME(6) NOT NULL
     ,DatumGewijzigd DATETIME(6) NOT NULL
-    ,FOREIGN KEY (UserId) REFERENCES users(Id)
+    ,FOREIGN KEY (UserId) REFERENCES users(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Medewerker (
@@ -47,7 +47,7 @@ CREATE TABLE Medewerker (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME(6) NOT NULL
     ,DatumGewijzigd DATETIME(6) NOT NULL
-    ,FOREIGN KEY (UserId) REFERENCES users(Id)
+    ,FOREIGN KEY (UserId) REFERENCES users(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Contact (
@@ -73,8 +73,8 @@ CREATE TABLE KlantPerContact (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME(6) NOT NULL
     ,DatumGewijzigd DATETIME(6) NOT NULL
-    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id)
-    ,FOREIGN KEY (ContactId) REFERENCES Contact(Id)
+    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (ContactId) REFERENCES Contact(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE MedewerkerPerContact (
@@ -85,8 +85,8 @@ CREATE TABLE MedewerkerPerContact (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME(6) NOT NULL
     ,DatumGewijzigd DATETIME(6) NOT NULL
-    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id)
-    ,FOREIGN KEY (ContactId) REFERENCES Contact(Id)
+    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (ContactId) REFERENCES Contact(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Behandeling (
@@ -113,7 +113,7 @@ CREATE TABLE Beschikbaarheid (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id)
+    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE MedewerkerPerBehandeling (
@@ -124,8 +124,8 @@ CREATE TABLE MedewerkerPerBehandeling (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id)
-    ,FOREIGN KEY (BehandelingId) REFERENCES Behandeling(Id)
+    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (BehandelingId) REFERENCES Behandeling(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Afspraak (
@@ -140,9 +140,9 @@ CREATE TABLE Afspraak (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id)
-    ,FOREIGN KEY (MedewerkerPerBehandelingId) REFERENCES MedewerkerPerBehandeling(Id)
-    ,FOREIGN KEY (BeschikbaarheidId) REFERENCES Beschikbaarheid(Id)
+    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (MedewerkerPerBehandelingId) REFERENCES MedewerkerPerBehandeling(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (BeschikbaarheidId) REFERENCES Beschikbaarheid(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Feedback (
@@ -155,8 +155,8 @@ CREATE TABLE Feedback (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id)
-    ,FOREIGN KEY (AfspraakId) REFERENCES Afspraak(Id)
+    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (AfspraakId) REFERENCES Afspraak(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Bestelling (
@@ -171,7 +171,7 @@ CREATE TABLE Bestelling (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id)
+    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Categorie (
@@ -198,7 +198,7 @@ CREATE TABLE Product (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (CategorieId) REFERENCES Categorie(Id)
+    ,FOREIGN KEY (CategorieId) REFERENCES Categorie(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE ProductPerBestelling (
@@ -213,8 +213,8 @@ CREATE TABLE ProductPerBestelling (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (ProductId) REFERENCES Product(Id)
-    ,FOREIGN KEY (BestellingId) REFERENCES Bestelling(Id)
+    ,FOREIGN KEY (ProductId) REFERENCES Product(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (BestellingId) REFERENCES Bestelling(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Voorraad (
@@ -227,7 +227,7 @@ CREATE TABLE Voorraad (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (ProductId) REFERENCES Product(Id)
+    ,FOREIGN KEY (ProductId) REFERENCES Product(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE BehandelingPerVoorraad (
@@ -238,8 +238,8 @@ CREATE TABLE BehandelingPerVoorraad (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (BehandelingId) REFERENCES Behandeling(Id)
-    ,FOREIGN KEY (VoorraadId) REFERENCES Voorraad(Id)
+    ,FOREIGN KEY (BehandelingId) REFERENCES Behandeling(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (VoorraadId) REFERENCES Voorraad(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Leverancier (
@@ -271,10 +271,9 @@ CREATE TABLE LeverancierOrder (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (ProductId) REFERENCES Product(Id)
-    ,FOREIGN KEY (LeverancierId) REFERENCES Leverancier(Id)
+    ,FOREIGN KEY (ProductId) REFERENCES Product(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (LeverancierId) REFERENCES Leverancier(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 -- ==========================================
 -- 3. INSERT TESTDATA
@@ -367,7 +366,7 @@ INSERT INTO Behandeling (Id, Naam, Omschrijving, DuurMinuten, Prijs, IsActief, O
 INSERT INTO Beschikbaarheid (Id, MedewerkerId, Dagnaam, Datum, Starttijd, Eindtijd, BeschStatus, IsActief, Opmerking, DatumAangemaakt, DatumGewijzigd) VALUES
 (1, 1, 'Woensdag', '2026-07-15', '09:00:00', '17:00:00', 'Beschikbaar', 1, NULL, NOW(), NOW()),
 (2, 1, 'Vrijdag', '2026-07-10', '09:00:00', '17:00:00', 'Beschikbaar', 1, NULL, NOW(), NOW()),
-(3, 2, 'Woensdag', '2026-07-15', '09:00:00', '17:00:00', 'Beschikbaar', 1, NULL, NOW(), NOW()),
+(3, 2, 'WOpmerkingoensdag', '2026-07-15', '09:00:00', '17:00:00', 'Beschikbaar', 1, NULL, NOW(), NOW()),
 (4, 2, 'Vrijdag', '2026-07-10', '09:00:00', '17:00:00', 'Beschikbaar', 1, NULL, NOW(), NOW()),
 (5, 3, 'Woensdag', '2026-07-15', '09:00:00', '17:00:00', 'Beschikbaar', 1, NULL, NOW(), NOW()),
 (6, 3, 'Vrijdag', '2026-07-10', '09:00:00', '17:00:00', 'Beschikbaar', 1, NULL, NOW(), NOW()),
@@ -443,16 +442,16 @@ INSERT INTO Categorie (Id, Naam, Omschrijving, IsActief, Opmerking, DatumAangema
 (4, 'Accessoires', 'Accessoires voor verkoop in de salon.', 1, NULL, NOW(), NOW());
 
 INSERT INTO Product (Id, CategorieId, Naam, Omschrijving, Merk, EANcode, Houdbaarheidsdatum, InkoopPrijs, VerkoopPrijs, IsActief, Opmerking, DatumAangemaakt, DatumGewijzigd) VALUES
-(1, 1, 'Hydrating Shampoo', 'Milde salonshampoo voor dagelijks gebruik.', 'Tiko Care', '0871234500001', '2027-07-01', 6.50, 14.95, 1, NULL, NOW(), NOW()),
-(2, 1, 'Repair Conditioner', 'Voedende conditioner voor beschadigd haar.', 'Tiko Care', '0871234500002', '2027-10-15', 7.25, 16.95, 1, NULL, NOW(), NOW()),
-(3, 1, 'Scalp Balance Masker', 'Kalmerend haarmasker voor gevoelige hoofdhuid.', 'Tiko Care', '0871234500003', '2027-05-20', 8.75, 19.95, 1, NULL, NOW(), NOW()),
-(4, 1, 'Baardolie Cedar', 'Verzorgende olie voor baardbehandelingen.', 'Tiko Beard', '0871234500004', '2027-09-30', 5.75, 12.95, 1, NULL, NOW(), NOW()),
-(5, 2, 'Color Creme 6.1', 'Professionele asdonkerblonde kleurcreme.', 'Tiko Color', '0871234500005', '2026-12-31', 12.50, 24.95, 1, NULL, NOW(), NOW()),
-(6, 2, 'Color Creme 7.43', 'Koperblonde salonkleur met warme ondertoon.', 'Tiko Color', '0871234500006', '2027-01-31', 12.75, 25.95, 1, NULL, NOW(), NOW()),
-(7, 2, 'Developer 6 Procent', 'Oxidatiecreme voor kleurbehandelingen.', 'Tiko Color', '0871234500007', '2027-03-31', 5.95, 11.95, 1, NULL, NOW(), NOW()),
-(8, 3, 'Matte Styling Clay', 'Matte clay met flexibele hold.', 'Tiko Style', '0871234500008', '2027-08-31', 4.95, 12.95, 1, NULL, NOW(), NOW()),
-(9, 3, 'Strong Hold Gel', 'Sterke hold styling gel.', 'Tiko Style', '0871234500009', '2027-03-31', 4.25, 9.95, 1, NULL, NOW(), NOW()),
-(10, 3, 'Heat Protect Spray', 'Beschermende spray voor föhnen en stylen.', 'Tiko Style', '0871234500010', '2027-11-30', 6.10, 15.95, 1, NULL, NOW(), NOW());
+(1, 1, 'Hydrating Shampoo', 'Milde salonshampoo voor dagelijks gebruik.', 'Tiko Care', '0871234500001', '2027-07-01', 6.50, 14.95, 1, 'Geschikt voor dagelijks salongebruik.', NOW(), NOW()),
+(2, 1, 'Repair Conditioner', 'Voedende conditioner voor beschadigd haar.', 'Tiko Care', '0871234500002', '2027-10-15', 7.25, 16.95, 1, 'Populair na kleurbehandelingen.', NOW(), NOW()),
+(3, 1, 'Scalp Balance Masker', 'Kalmerend haarmasker voor gevoelige hoofdhuid.', 'Tiko Care', '0871234500003', '2027-05-20', 8.75, 19.95, 1, 'Aanbevolen bij droge of jeukende hoofdhuid.', NOW(), NOW()),
+(4, 1, 'Baardolie Cedar', 'Verzorgende olie voor baardbehandelingen.', 'Tiko Beard', '0871234500004', '2027-09-30', 5.75, 12.95, 1, 'Geschikt voor verkoop na baardtrimbehandeling...', NOW(), NOW()),
+(5, 2, 'Color Creme 6.1', 'Professionele asdonkerblonde kleurcreme.', 'Tiko Color', '0871234500005', '2026-12-31', 12.50, 24.95, 1, 'Controleer kleurcode voor gebruik.', NOW(), NOW()),
+(6, 2, 'Color Creme 7.43', 'Koperblonde salonkleur met warme ondertoon.', 'Tiko Color', '0871234500006', '2027-01-31', 12.75, 25.95, 1, 'Veel gebruikt voor warme koperaccenten', NOW(), NOW()),
+(7, 2, 'Developer 6 Procent', 'Oxidatiecreme voor kleurbehandelingen.', 'Tiko Color', '0871234500007', '2027-03-31', 5.95, 11.95, 1, 'Alleen professioneel gebruiken.', NOW(), NOW()),
+(8, 3, 'Matte Styling Clay', 'Matte clay met flexibele hold.', 'Tiko Style', '0871234500008', '2027-08-31', 4.95, 12.95, 1, 'Populair bij korte kapsels met matte finish.', NOW(), NOW()),
+(9, 3, 'Strong Hold Gel', 'Sterke hold styling gel.', 'Tiko Style', '0871234500009', '2027-03-31', 4.25, 9.95, 1, 'Sterke hold, zuinig doseren.', NOW(), NOW()),
+(10, 3, 'Heat Protect Spray', 'Beschermende spray voor föhnen en stylen.', 'Tiko Style', '0871234500010', '2027-11-30', 6.10, 15.95, 1, 'Aanbrengen op handdoekdroog haar.', NOW(), NOW());
 
 INSERT INTO ProductPerBestelling (Id, ProductId, BestellingId, Aantal, UnitPrijs, BTWPercentage, Korting, IsActief, Opmerking, DatumAangemaakt, DatumGewijzigd) VALUES
 (1, 1, 1, 2, 14.95, 21.00, 0.00, 1, NULL, NOW(), NOW()),
