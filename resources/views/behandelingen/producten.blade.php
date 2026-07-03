@@ -32,7 +32,7 @@
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">EAN-code</th>
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Aantal op voorraad</th>
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Verkoopprijs</th>
-                        <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Actie</th>
+                        <th scope="col" class="px-4 py-2 text-center text-sm font-semibold">Actie</th>
                     </tr>
                 </thead>
                 <tbody>
