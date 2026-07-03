@@ -72,8 +72,7 @@
                                 <td>EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
                                 <td>{{ $product->AantalOpVoorraad }}</td>
                                 <td>
-                                    {{-- Placeholder: detailpagina volgt in een latere user story --}}
-                                    <a href="#" class="btn btn-outline-primary btn-sm">Details</a>
+                                    <a href="{{ route('products.show', $product->Id) }}" class="btn btn-outline-primary btn-sm">Details</a>
                                 </td>
                             </tr>
                         @empty

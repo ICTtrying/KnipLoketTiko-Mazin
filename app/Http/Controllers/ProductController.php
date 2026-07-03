@@ -74,11 +74,27 @@ class ProductController extends Controller
     }
 
     /**
-     * Niet gebruikt, maar aanwezig voor CRUD-consistentie.
+     * Toon de detailpagina van één product (User Story 08, Wireframe-03).
      */
-    public function show(int $id): RedirectResponse
+    public function show(int $id): View|RedirectResponse
     {
-        abort(404);
+        try {
+            Log::info('Productdetail opgevraagd', ['product_id' => $id]);
+
+            $product = $this->haalProductDetailOp($id);
+
+            if ($product === null) {
+                abort(404, 'Product niet gevonden.');
+            }
+
+            return view('products.show', [
+                'product' => $product,
+            ]);
+        } catch (Throwable $e) {
+            Log::error('Fout bij ophalen productdetail', ['product_id' => $id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('products.index')->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van het product.');
+        }
     }
 
     /**
@@ -138,6 +154,38 @@ class ProductController extends Controller
             ->orderBy('p.Id')
             ->selectRaw('p.Id, p.Naam, c.Naam AS CategorieNaam, p.Merk, p.EANcode, p.VerkoopPrijs, COALESCE(v.AantalOpVoorraad, 0) AS AantalOpVoorraad')
             ->get());
+    }
+
+    /**
+     * Haal de detailgegevens van één product op via de stored procedure GetProductDetail.
+     *
+     * Voor databases zonder stored procedures (zoals SQLite in de tests)
+     * wordt een gelijkwaardige query builder-fallback gebruikt.
+     */
+    private function haalProductDetailOp(int $productId): object|null
+    {
+        if ($this->gebruiktStoredProcedures()) {
+            return collect(DB::select('CALL GetProductDetail(?)', [$productId]))->first();
+        }
+
+        return DB::table('Product as p')
+            ->leftJoin('Voorraad as v', function ($join): void {
+                $join->on('v.ProductId', '=', 'p.Id')
+                    ->where('v.IsActief', '=', 1);
+            })
+            ->leftJoin('LeverancierOrder as lo', function ($join): void {
+                $join->on('lo.ProductId', '=', 'p.Id')
+                    ->where('lo.IsActief', '=', 1)
+                    ->whereRaw('lo.Id = (SELECT MAX(lo2.Id) FROM LeverancierOrder lo2 WHERE lo2.ProductId = p.Id AND lo2.IsActief = 1)');
+            })
+            ->leftJoin('Leverancier as l', function ($join): void {
+                $join->on('l.Id', '=', 'lo.LeverancierId')
+                    ->where('l.IsActief', '=', 1);
+            })
+            ->where('p.Id', $productId)
+            ->where('p.IsActief', 1)
+            ->selectRaw('p.Id, p.Naam, p.Merk, p.Omschrijving, p.EANcode, p.Houdbaarheidsdatum, p.InkoopPrijs, p.VerkoopPrijs, COALESCE(v.AantalOpVoorraad, 0) AS AantalOpVoorraad, l.Naam AS LeverancierNaam, l.Postcode AS LeverancierPostcode, l.Plaats AS LeverancierPlaats, l.Email AS LeverancierEmail, l.Mobiel AS LeverancierMobiel, p.Opmerking')
+            ->first();
     }
 
     /**
