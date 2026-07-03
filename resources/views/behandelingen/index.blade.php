@@ -49,27 +49,21 @@
                             <th>Behandeling</th>
                             <th>Omschrijving</th>
                             <th>Duur (Min)</th>
-                            <th>Datum Aangemaakt</th>
-                            <th>Status</th>
                             <th>Prijs</th>
+                            <th>Aantal producten</th>
                             <th>Actie</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($bestellingen as $behandeling)
                             <tr>
-                                <td><strong>{{ $behandeling->BestelNummer }}</strong></td>
-                                <td>{{ $behandeling->KlantNaam }}</td>
-                                <td>{{ $behandeling->Relatienummer }} min</td>
-                                <td>{{ \Illuminate\Support\Carbon::parse($behandeling->Datum)->format('d-m-Y') }}</td>
+                                <td><strong>{{ $behandeling->Naam }}</strong></td>
+                                <td>{{ $behandeling->Omschrijving }}</td>
+                                <td>{{ $behandeling->DuurMinuten }} min</td>
+                                <td>EUR {{ number_format((float) $behandeling->Prijs, 2, ',', '.') }}</td>
+                                <td>{{ $behandeling->AantalProducten }}</td>
                                 <td>
-                                    <span class="badge {{ $behandeling->Bestelstatus ? 'bg-success' : 'bg-secondary' }}">
-                                        {{ $statusLabels[$behandeling->Bestelstatus] ?? 'Onbekend' }}
-                                    </span>
-                                </td>
-                                <td>EUR {{ number_format((float) $behandeling->Totaal, 2, ',', '.') }}</td>
-                                <td>
-                                    <a href="{{ route('behandelingen.show', $behandeling->BestellingId) }}"
+                                    <a href="{{ route('behandelingen.show', $behandeling->BehandelingId) }}"
                                         class="btn btn-outline-primary btn-sm">Details</a>
                                 </td>
                             </tr>
