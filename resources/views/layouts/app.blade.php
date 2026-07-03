@@ -41,7 +41,7 @@
                             'Beschikbaarheid' => ['url' => '#', 'patroon' => 'beschikbaarheid.*'],
                             'Klanten' => ['url' => '#', 'patroon' => 'klanten.*'],
                             'Afspraken' => ['url' => '#', 'patroon' => 'afspraken.*'],
-                            'Behandelingen' => ['url' => '#', 'patroon' => 'behandelingen.*'],
+                            'Behandelingen' => ['url' => route('behandelingen.index'), 'patroon' => 'behandelingen.*'],
                             'Producten' => ['url' => route('products.index'), 'patroon' => 'products.*'],
                             'Bestellingen' => ['url' => route('bestellingen.index'), 'patroon' => 'bestellingen.*'],
                         ];
