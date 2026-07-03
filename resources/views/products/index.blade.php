@@ -43,6 +43,9 @@
         <div class="card-body">
             <p class="mb-3">Gevonden producten - {{ $producten->total() }} product(en)</p>
 
+            {{-- Wireframe-02: paginering onder de teksregel, boven de tabel --}}
+            {{ $producten->links('pagination::bootstrap-5') }}
+
             <div class="table-responsive">
                 <table class="table table-bordered align-middle">
                     <thead class="bg-danger text-white">
