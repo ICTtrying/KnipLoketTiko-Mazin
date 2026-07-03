@@ -4,8 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Migration die alle stored procedures voor de Bestelling-module registreert
- * vanaf de .sql-bestanden in database/Createscript/Procedures.
+ * Migration die alle stored procedures voor de Behandeling-module registreert
+ * vanaf de .sql-bestanden in database/Createscript/Procedures (User Story 05 en 06).
  *
  * Alleen MySQL/MariaDB: sqlite kent geen stored procedures; de controller
  * gebruikt daar een query-fallback.
@@ -14,10 +14,10 @@ return new class extends Migration
 {
     /** @var list<string> Bestandsnamen van de stored procedures, in aanmaakvolgorde */
     private array $procedureBestanden = [
-        'sp_bestellingen_overzicht.sql',
-        'sp_bestelling_producten_overzicht.sql',
-        'sp_bestelproduct_ophalen.sql',
-        'sp_bestelproduct_wijzigen.sql',
+        'sp_behandelingen_overzicht.sql',
+        'sp_producten_per_behandeling.sql',
+        'sp_product_detail.sql',
+        'sp_product_verkoopprijs_bijwerken.sql',
     ];
 
     public function up(): void
