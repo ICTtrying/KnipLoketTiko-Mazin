@@ -1,13 +1,4 @@
 <?php
-<<<<<<< HEAD
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-=======
  
 namespace App\Models;
 
@@ -19,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
->>>>>>> 83f3a0ebd1c66b988e3fdbf58407ae4acdd44fa3
 
 /**
  * Model voor de tabel Klant.
@@ -28,18 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Voornaam, Tussenvoegsel en Achternaam via de VolledigeNaam-accessor.
  * Relatienummer is een gewone kolom en wordt nooit berekend.
  */
-<<<<<<< HEAD
-class Klant extends Model
-{
-    use HasFactory;
-
-    protected $table = 'Klant';
-
-    protected $primaryKey = 'Id';
-
-    public $timestamps = false;
-
-=======
 
 class Klant extends Model
 {
@@ -49,7 +27,6 @@ class Klant extends Model
     protected $primaryKey = 'Id';
     public $timestamps = false;
  
->>>>>>> 83f3a0ebd1c66b988e3fdbf58407ae4acdd44fa3
     protected $fillable = [
         'UserId',
         'Voornaam',
@@ -60,14 +37,6 @@ class Klant extends Model
         'IsActief',
         'Opmerking',
         'DatumAangemaakt',
-<<<<<<< HEAD
-        'DatumGewijzigd',
-    ];
-
-    /**
-     * Relatie: Klant belongs to User
-     */
-=======
         'DatumGewijzigd'
     ];
 
@@ -77,7 +46,6 @@ class Klant extends Model
      */
     public function user()
 
->>>>>>> 83f3a0ebd1c66b988e3fdbf58407ae4acdd44fa3
 
     public const CREATED_AT = 'DatumAangemaakt';
 
