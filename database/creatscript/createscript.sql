@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS Kniploket-Tiko-Mazin;
-CREATE DATABASE Kniploket-Tiko-Mazin;
-USE Kniploket-Tiko-Mazin;
+DROP DATABASE IF EXISTS `Kniploket-Tiko-Mazin`;
+CREATE DATABASE `Kniploket-Tiko-Mazin`;
+USE `Kniploket-Tiko-Mazin`;
 
 -- ==========================================
 -- 2. CREATE TABLES
