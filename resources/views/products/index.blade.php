@@ -17,7 +17,8 @@
     <div class="card shadow-sm mb-3">
         <div class="card-body">
             <form method="GET" action="{{ route('products.index') }}">
-                <div class="d-flex align-items-end gap-2 flex-wrap">
+                {{-- Wireframe-02: filter rechts uitgelijnd in de witte kaart --}}
+                <div class="d-flex align-items-end gap-2 flex-wrap justify-content-end">
                     <div>
                         <label for="categorie" class="form-label mb-1">Categorie selecteren</label>
                         {{-- Client-side validatie: de select beperkt de invoer tot de geldige categorieën --}}
