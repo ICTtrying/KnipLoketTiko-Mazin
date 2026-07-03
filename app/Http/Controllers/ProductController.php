@@ -106,14 +106,38 @@ class ProductController extends Controller
     }
 
     /**
+     * Controleer of de database stored procedures ondersteunt.
+     */
+    private function gebruiktStoredProcedures(): bool
+    {
+        return in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true);
+    }
+
+    /**
      * Haal het productenoverzicht op via de stored procedure GetAllProducten.
      *
      * De aanroep gebruikt een prepared statement met parameterbinding,
      * zodat SQL-injectie via het categorie-filter niet mogelijk is.
+     * Voor databases zonder stored procedures (zoals SQLite in de tests)
+     * wordt een gelijkwaardige query builder-fallback gebruikt.
      */
     private function haalProductenOp(?int $categorieId): Collection
     {
-        return collect(DB::select('CALL GetAllProducten(?)', [$categorieId]));
+        if ($this->gebruiktStoredProcedures()) {
+            return collect(DB::select('CALL GetAllProducten(?)', [$categorieId]));
+        }
+
+        return collect(DB::table('Product as p')
+            ->join('Categorie as c', 'c.Id', '=', 'p.CategorieId')
+            ->leftJoin('Voorraad as v', function ($join): void {
+                $join->on('v.ProductId', '=', 'p.Id')
+                    ->where('v.IsActief', '=', 1);
+            })
+            ->where('p.IsActief', 1)
+            ->when($categorieId !== null && $categorieId !== 0, fn ($query) => $query->where('p.CategorieId', $categorieId))
+            ->orderBy('p.Id')
+            ->selectRaw('p.Id, p.Naam, c.Naam AS CategorieNaam, p.Merk, p.EANcode, p.VerkoopPrijs, COALESCE(v.AantalOpVoorraad, 0) AS AantalOpVoorraad')
+            ->get());
     }
 
     /**

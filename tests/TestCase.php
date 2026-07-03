@@ -71,6 +71,18 @@ abstract class TestCase extends BaseTestCase
             $table->dateTime('DatumGewijzigd');
         });
 
+        Schema::create('Voorraad', function (Blueprint $table): void {
+            $table->increments('Id');
+            $table->unsignedInteger('ProductId');
+            $table->integer('AantalOpVoorraad');
+            $table->integer('Aantaluitgegeven');
+            $table->integer('Aantalbijgekomen');
+            $table->boolean('IsActief')->default(true);
+            $table->string('Opmerking', 255)->nullable();
+            $table->dateTime('DatumAangemaakt');
+            $table->dateTime('DatumGewijzigd');
+        });
+
         Schema::create('Bestelling', function (Blueprint $table): void {
             $table->increments('Id');
             $table->unsignedInteger('KlantId');
