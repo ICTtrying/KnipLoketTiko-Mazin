@@ -14,6 +14,7 @@ class BestellingSeeder extends Seeder
     {
         DB::table('ProductPerBestelling')->delete();
         DB::table('Bestelling')->delete();
+        DB::table('Voorraad')->delete();
         DB::table('Product')->delete();
         DB::table('Categorie')->delete();
         DB::table('Klant')->delete();
@@ -37,19 +38,38 @@ class BestellingSeeder extends Seeder
             ['Id' => 6, 'UserId' => 6, 'Naam' => 'Daan Visser', 'Telefoonnummer' => '0612345683', 'WensenAllergieen' => null, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
         ]);
 
+        // Categorieën, producten en voorraad komen 1-op-1 uit database/creatscript/createscript.sql
         DB::table('Categorie')->insert([
-            ['Id' => 1, 'Naam' => 'Haarverzorging', 'Omschrijving' => 'Verzorgingsproducten voor het haar', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 2, 'Naam' => 'Styling', 'Omschrijving' => 'Stylingproducten', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 3, 'Naam' => 'Kleur', 'Omschrijving' => 'Kleurproducten', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 1, 'Naam' => 'Haarverzorging', 'Omschrijving' => 'Producten voor wassen en verzorgen.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 2, 'Naam' => 'Kleurproducten', 'Omschrijving' => 'Producten voor kleurbehandelingen.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 3, 'Naam' => 'Styling', 'Omschrijving' => 'Producten voor afwerking en styling.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 4, 'Naam' => 'Accessoires', 'Omschrijving' => 'Accessoires voor verkoop in de salon.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
         ]);
 
         DB::table('Product')->insert([
-            ['Id' => 1, 'CategorieId' => 1, 'Naam' => 'Hydrating Shampoo', 'Omschrijving' => 'Hydraterende shampoo', 'Merk' => 'Tiko Care', 'EANcode' => 'EAN000000000001', 'Houdbaarheidsdatum' => '2027-12-31', 'InkoopPrijs' => 8.50, 'VerkoopPrijs' => 14.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 2, 'CategorieId' => 1, 'Naam' => 'Repair Conditioner', 'Omschrijving' => 'Herstellende conditioner', 'Merk' => 'Tiko Care', 'EANcode' => 'EAN000000000002', 'Houdbaarheidsdatum' => '2027-12-31', 'InkoopPrijs' => 9.25, 'VerkoopPrijs' => 16.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 3, 'CategorieId' => 2, 'Naam' => 'Heat Protect Spray', 'Omschrijving' => 'Beschermende spray', 'Merk' => 'Tiko Style', 'EANcode' => 'EAN000000000003', 'Houdbaarheidsdatum' => '2027-12-31', 'InkoopPrijs' => 9.50, 'VerkoopPrijs' => 15.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 4, 'CategorieId' => 2, 'Naam' => 'Strong Hold Gel', 'Omschrijving' => 'Sterke stylinggel', 'Merk' => 'Tiko Style', 'EANcode' => 'EAN000000000004', 'Houdbaarheidsdatum' => '2027-12-31', 'InkoopPrijs' => 5.50, 'VerkoopPrijs' => 9.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 5, 'CategorieId' => 2, 'Naam' => 'Volume Mousse', 'Omschrijving' => 'Volume mousse', 'Merk' => 'Tiko Style', 'EANcode' => 'EAN000000000005', 'Houdbaarheidsdatum' => '2027-12-31', 'InkoopPrijs' => 6.10, 'VerkoopPrijs' => 11.50, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
-            ['Id' => 6, 'CategorieId' => 3, 'Naam' => 'Color Mask', 'Omschrijving' => 'Kleurmasker', 'Merk' => 'Tiko Color', 'EANcode' => 'EAN000000000006', 'Houdbaarheidsdatum' => '2027-12-31', 'InkoopPrijs' => 7.10, 'VerkoopPrijs' => 12.90, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 1, 'CategorieId' => 1, 'Naam' => 'Hydrating Shampoo', 'Omschrijving' => 'Milde salonshampoo voor dagelijks gebruik.', 'Merk' => 'Tiko Care', 'EANcode' => '0871234500001', 'Houdbaarheidsdatum' => '2027-07-01', 'InkoopPrijs' => 6.50, 'VerkoopPrijs' => 14.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 2, 'CategorieId' => 1, 'Naam' => 'Repair Conditioner', 'Omschrijving' => 'Voedende conditioner voor beschadigd haar.', 'Merk' => 'Tiko Care', 'EANcode' => '0871234500002', 'Houdbaarheidsdatum' => '2027-10-15', 'InkoopPrijs' => 7.25, 'VerkoopPrijs' => 16.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 3, 'CategorieId' => 1, 'Naam' => 'Scalp Balance Masker', 'Omschrijving' => 'Kalmerend haarmasker voor gevoelige hoofdhuid.', 'Merk' => 'Tiko Care', 'EANcode' => '0871234500003', 'Houdbaarheidsdatum' => '2027-05-20', 'InkoopPrijs' => 8.75, 'VerkoopPrijs' => 19.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 4, 'CategorieId' => 1, 'Naam' => 'Baardolie Cedar', 'Omschrijving' => 'Verzorgende olie voor baardbehandelingen.', 'Merk' => 'Tiko Beard', 'EANcode' => '0871234500004', 'Houdbaarheidsdatum' => '2027-09-30', 'InkoopPrijs' => 5.75, 'VerkoopPrijs' => 12.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 5, 'CategorieId' => 2, 'Naam' => 'Color Creme 6.1', 'Omschrijving' => 'Professionele asdonkerblonde kleurcreme.', 'Merk' => 'Tiko Color', 'EANcode' => '0871234500005', 'Houdbaarheidsdatum' => '2026-12-31', 'InkoopPrijs' => 12.50, 'VerkoopPrijs' => 24.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 6, 'CategorieId' => 2, 'Naam' => 'Color Creme 7.43', 'Omschrijving' => 'Koperblonde salonkleur met warme ondertoon.', 'Merk' => 'Tiko Color', 'EANcode' => '0871234500006', 'Houdbaarheidsdatum' => '2027-01-31', 'InkoopPrijs' => 12.75, 'VerkoopPrijs' => 25.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 7, 'CategorieId' => 2, 'Naam' => 'Developer 6 Procent', 'Omschrijving' => 'Oxidatiecreme voor kleurbehandelingen.', 'Merk' => 'Tiko Color', 'EANcode' => '0871234500007', 'Houdbaarheidsdatum' => '2027-03-31', 'InkoopPrijs' => 5.95, 'VerkoopPrijs' => 11.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 8, 'CategorieId' => 3, 'Naam' => 'Matte Styling Clay', 'Omschrijving' => 'Matte clay met flexibele hold.', 'Merk' => 'Tiko Style', 'EANcode' => '0871234500008', 'Houdbaarheidsdatum' => '2027-08-31', 'InkoopPrijs' => 4.95, 'VerkoopPrijs' => 12.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 9, 'CategorieId' => 3, 'Naam' => 'Strong Hold Gel', 'Omschrijving' => 'Sterke hold styling gel.', 'Merk' => 'Tiko Style', 'EANcode' => '0871234500009', 'Houdbaarheidsdatum' => '2027-03-31', 'InkoopPrijs' => 4.25, 'VerkoopPrijs' => 9.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 10, 'CategorieId' => 3, 'Naam' => 'Heat Protect Spray', 'Omschrijving' => 'Beschermende spray voor föhnen en stylen.', 'Merk' => 'Tiko Style', 'EANcode' => '0871234500010', 'Houdbaarheidsdatum' => '2027-11-30', 'InkoopPrijs' => 6.10, 'VerkoopPrijs' => 15.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+        ]);
+
+        DB::table('Voorraad')->insert([
+            ['Id' => 1, 'ProductId' => 1, 'AantalOpVoorraad' => 40, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 40, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 2, 'ProductId' => 2, 'AantalOpVoorraad' => 28, 'Aantaluitgegeven' => 2, 'Aantalbijgekomen' => 30, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 3, 'ProductId' => 3, 'AantalOpVoorraad' => 18, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 18, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 4, 'ProductId' => 4, 'AantalOpVoorraad' => 20, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 20, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 5, 'ProductId' => 5, 'AantalOpVoorraad' => 25, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 25, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 6, 'ProductId' => 6, 'AantalOpVoorraad' => 16, 'Aantaluitgegeven' => 1, 'Aantalbijgekomen' => 17, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 7, 'ProductId' => 7, 'AantalOpVoorraad' => 32, 'Aantaluitgegeven' => 3, 'Aantalbijgekomen' => 35, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 8, 'ProductId' => 8, 'AantalOpVoorraad' => 22, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 22, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 9, 'ProductId' => 9, 'AantalOpVoorraad' => 35, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 35, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
+            ['Id' => 10, 'ProductId' => 10, 'AantalOpVoorraad' => 24, 'Aantaluitgegeven' => 1, 'Aantalbijgekomen' => 25, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
         ]);
 
         DB::table('Bestelling')->insert([
