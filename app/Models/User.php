@@ -10,14 +10,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $table = 'User';
+    /**
+     * Laravel's default users-tabel: bewust Engels en lowercase, exact zoals
+     * in het create-script van het team.
+     */
+    protected $table = 'users';
 
     protected $primaryKey = 'Id';
 

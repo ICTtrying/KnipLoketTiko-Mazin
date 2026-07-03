@@ -27,12 +27,12 @@ CREATE TABLE Klant (
     ,Tussenvoegsel VARCHAR(30) NULL
     ,Achternaam VARCHAR(100) NOT NULL
     ,Relatienummer VARCHAR(20) NOT NULL
-    ,Bijzonderheden VARCHAR(15) NOT NULL
+    ,Bijzonderheden VARCHAR(50) NOT NULL
     ,IsActief BIT NOT NULL DEFAULT 1
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME(6) NOT NULL
     ,DatumGewijzigd DATETIME(6) NOT NULL
-    ,FOREIGN KEY (UserId) REFERENCES users(Id)
+    ,FOREIGN KEY (UserId) REFERENCES users(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Medewerker (
@@ -47,7 +47,7 @@ CREATE TABLE Medewerker (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME(6) NOT NULL
     ,DatumGewijzigd DATETIME(6) NOT NULL
-    ,FOREIGN KEY (UserId) REFERENCES users(Id)
+    ,FOREIGN KEY (UserId) REFERENCES users(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Contact (
@@ -73,8 +73,8 @@ CREATE TABLE KlantPerContact (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME(6) NOT NULL
     ,DatumGewijzigd DATETIME(6) NOT NULL
-    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id)
-    ,FOREIGN KEY (ContactId) REFERENCES Contact(Id)
+    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (ContactId) REFERENCES Contact(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE MedewerkerPerContact (
@@ -85,8 +85,8 @@ CREATE TABLE MedewerkerPerContact (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME(6) NOT NULL
     ,DatumGewijzigd DATETIME(6) NOT NULL
-    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id)
-    ,FOREIGN KEY (ContactId) REFERENCES Contact(Id)
+    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (ContactId) REFERENCES Contact(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Behandeling (
@@ -113,7 +113,7 @@ CREATE TABLE Beschikbaarheid (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id)
+    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE MedewerkerPerBehandeling (
@@ -124,8 +124,8 @@ CREATE TABLE MedewerkerPerBehandeling (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id)
-    ,FOREIGN KEY (BehandelingId) REFERENCES Behandeling(Id)
+    ,FOREIGN KEY (MedewerkerId) REFERENCES Medewerker(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (BehandelingId) REFERENCES Behandeling(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Afspraak (
@@ -140,9 +140,9 @@ CREATE TABLE Afspraak (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id)
-    ,FOREIGN KEY (MedewerkerPerBehandelingId) REFERENCES MedewerkerPerBehandeling(Id)
-    ,FOREIGN KEY (BeschikbaarheidId) REFERENCES Beschikbaarheid(Id)
+    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (MedewerkerPerBehandelingId) REFERENCES MedewerkerPerBehandeling(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (BeschikbaarheidId) REFERENCES Beschikbaarheid(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Feedback (
@@ -155,8 +155,8 @@ CREATE TABLE Feedback (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id)
-    ,FOREIGN KEY (AfspraakId) REFERENCES Afspraak(Id)
+    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (AfspraakId) REFERENCES Afspraak(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Bestelling (
@@ -171,7 +171,7 @@ CREATE TABLE Bestelling (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id)
+    ,FOREIGN KEY (KlantId) REFERENCES Klant(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Categorie (
@@ -198,7 +198,7 @@ CREATE TABLE Product (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (CategorieId) REFERENCES Categorie(Id)
+    ,FOREIGN KEY (CategorieId) REFERENCES Categorie(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE ProductPerBestelling (
@@ -213,8 +213,8 @@ CREATE TABLE ProductPerBestelling (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (ProductId) REFERENCES Product(Id)
-    ,FOREIGN KEY (BestellingId) REFERENCES Bestelling(Id)
+    ,FOREIGN KEY (ProductId) REFERENCES Product(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (BestellingId) REFERENCES Bestelling(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Voorraad (
@@ -227,7 +227,7 @@ CREATE TABLE Voorraad (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (ProductId) REFERENCES Product(Id)
+    ,FOREIGN KEY (ProductId) REFERENCES Product(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE BehandelingPerVoorraad (
@@ -238,8 +238,8 @@ CREATE TABLE BehandelingPerVoorraad (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (BehandelingId) REFERENCES Behandeling(Id)
-    ,FOREIGN KEY (VoorraadId) REFERENCES Voorraad(Id)
+    ,FOREIGN KEY (BehandelingId) REFERENCES Behandeling(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (VoorraadId) REFERENCES Voorraad(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Leverancier (
@@ -271,10 +271,9 @@ CREATE TABLE LeverancierOrder (
     ,Opmerking VARCHAR(255) NULL
     ,DatumAangemaakt DATETIME NOT NULL
     ,DatumGewijzigd DATETIME NOT NULL
-    ,FOREIGN KEY (ProductId) REFERENCES Product(Id)
-    ,FOREIGN KEY (LeverancierId) REFERENCES Leverancier(Id)
+    ,FOREIGN KEY (ProductId) REFERENCES Product(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    ,FOREIGN KEY (LeverancierId) REFERENCES Leverancier(Id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 -- ==========================================
 -- 3. INSERT TESTDATA

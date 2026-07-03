@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bestelling;
+use App\Models\Behandeling;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ class BehandelingController extends Controller
     {
         $this->behandeling = $behandeling;
     }
-    
+
     public function index(Request $request): View|RedirectResponse
     {
         try {
@@ -35,7 +35,7 @@ class BehandelingController extends Controller
 
             $paginator = $this->maakPaginatie($bestellingen, $request, 4);
 
-            return view('bestellingen.index', [
+            return view('behandelingen.index', [
                 'bestellingen' => $paginator,
                 'geselecteerdeStatus' => $status,
             ]);
@@ -58,7 +58,7 @@ class BehandelingController extends Controller
             $bestelling = Bestelling::query()->findOrFail($id);
             $producten = $this->haalProductenPerBestellingOp($id);
 
-            return view('bestellingen.producten', [
+            return view('behandelingen.producten', [
                 'bestelling' => $bestelling,
                 'producten' => $producten,
             ]);

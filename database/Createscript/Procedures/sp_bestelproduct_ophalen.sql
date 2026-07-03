@@ -12,8 +12,10 @@ BEGIN
         b.Id AS BestellingId,
         b.BestelNummer,
         b.Bestelstatus,
-        k.Naam AS KlantNaam,
-        CONCAT('KL-2026-', LPAD(k.Id, 3, '0')) AS Relatienummer,
+        -- Weergavenaam samenstellen: Klant heeft geen Naam-kolom; CONCAT_WS slaat NULL-tussenvoegsels over
+        CONCAT_WS(' ', k.Voornaam, k.Tussenvoegsel, k.Achternaam) AS KlantNaam,
+        -- Relatienummer bestaat als kolom en wordt rechtstreeks gebruikt (niet berekend)
+        k.Relatienummer,
         ppb.Id AS ProductPerBestellingId,
         p.Naam AS ProductNaam,
         c.Naam AS CategorieNaam,
