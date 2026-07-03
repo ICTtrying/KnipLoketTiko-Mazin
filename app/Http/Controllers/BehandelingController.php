@@ -91,6 +91,7 @@ class BehandelingController extends Controller
         // try-catch voor productdetail, met logging en foutafhandeling
         try {
             Log::info('Productdetail opgevraagd', ['product_id' => $productId]);
+            
         // Haal productdetail op via stored procedure of query builder fallback
             $product = $this->haalProductDetailOp($productId);
 
@@ -102,6 +103,7 @@ class BehandelingController extends Controller
                 'product' => $product,
             ]);
         } catch (Throwable $e) {
+            // Log de fout voor debugging en auditing
             Log::error('Fout bij ophalen productdetail', ['product_id' => $productId, 'error' => $e->getMessage()]);
 
             return redirect()->route('behandelingen.index')->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van het product.');
@@ -114,14 +116,16 @@ class BehandelingController extends Controller
     public function wijzigForm(int $productId): View|RedirectResponse
     {
         try {
+            // Log de actie voor auditing en debugging
             Log::info('Product wijzig-formulier geopend', ['product_id' => $productId]);
 
+            // Haal productdetail op via stored procedure of query builder fallback
             $product = $this->haalProductDetailOp($productId);
 
             if ($product === null) {
                 abort(404, 'Product niet gevonden.');
             }
-
+            // Render het wijzigformulier met de opgehaalde productgegevens
             return view('behandelingen.wijzigen', [
                 'product' => $product,
             ]);
@@ -148,32 +152,32 @@ class BehandelingController extends Controller
                 'nieuwe_verkoopprijs' => $gevalideerd['nieuwe_verkoopprijs'],
             ]);
 
+            // Wijzig de verkoopprijs en opmerking via stored procedure of query builder fallback
             [$succes, $foutmelding] = $this->wijzigVerkoopprijs(
                 $productId,
                 (float) $gevalideerd['nieuwe_verkoopprijs'],
                 $gevalideerd['opmerking'] ?? null,
             );
 
+            // Als de wijziging niet succesvol is, log een waarschuwing en geef een foutmelding terug
             if (! $succes) {
                 Log::warning('Wijzigen verkoopprijs geweigerd door businessregel', [
                     'product_id' => $productId,
                     'reden' => $foutmelding,
                 ]);
-
-                return back()
+                // Terug naar het formulier met foutmelding en oude input
+                return back()   
                     ->withInput()
                     ->with('foutmelding', 'Gegevens niet bijgewerkt')
                     ->withErrors(['nieuwe_verkoopprijs' => $foutmelding ?? 'De verkoopprijs kon niet worden gewijzigd.']);
             }
-
+            // Log de succesvolle wijziging en redirect naar de productdetailpagina met een succesmelding
             Log::info('Verkoopprijs product succesvol gewijzigd', ['product_id' => $productId]);
-
             return redirect()
                 ->route('behandelingen.product.detail', $productId)
                 ->with('succesmelding', 'Productprijs bijgewerkt');
         } catch (Throwable $e) {
             Log::error('Fout bij wijzigen verkoopprijs product', ['product_id' => $productId, 'error' => $e->getMessage()]);
-
             return back()->withInput()->with('foutmelding', 'Er is een onverwachte fout opgetreden.');
         }
     }
@@ -183,10 +187,12 @@ class BehandelingController extends Controller
      */
     private function maakPaginatie(Collection $items, Request $request, int $perPagina): LengthAwarePaginator
     {
+        // Bepaal de huidige pagina en het totaal aantal items
         $huidigePagina = LengthAwarePaginator::resolveCurrentPage();
         $totaal = $items->count();
-        $resultaten = $items->slice(($huidigePagina - 1) * $perPagina, $perPagina)->values();
+        $resultaten = $items->slice (($huidigePagina - 1) * $perPagina, $perPagina)->values();
 
+        // Maak een nieuwe LengthAwarePaginator met de gesneden resultaten en de juiste metadata
         return new LengthAwarePaginator($resultaten, $totaal, $perPagina, $huidigePagina, [
             'path' => $request->url(),
             'query' => $request->query(),
@@ -198,23 +204,22 @@ class BehandelingController extends Controller
      */
     private function gebruiktStoredProcedures(): bool
     {
+        // Alleen MySQL en MariaDB ondersteunen stored procedures in deze applicatie
         return in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true);
     }
 
-    /**
-     * Haal het behandelingenoverzicht op via de stored procedure
-     * sp_behandelingen_overzicht (prepared statement tegen SQL-injectie).
-     * Voor databases zonder stored procedures (sqlite in de tests) wordt
-     * een gelijkwaardige query builder-fallback gebruikt.
-     */
     private function haalBehandelingenOp(string $naam): Collection
     {
+        // Als stored procedures worden gebruikt, roep dan de procedure sp_behandelingen_overzicht aan
         if ($this->gebruiktStoredProcedures()) {
             return collect(DB::select('CALL sp_behandelingen_overzicht(?)', [
                 $naam === 'Alle behandelingen' ? null : $naam,
             ]));
         }
-
+        /* Fallback voor databases die geen stored procedures ondersteunen (zoals MySQL)
+        * De query telt het aantal producten per behandeling en filtert op actieve records.
+        * De resultaten worden gegroepeerd en gesorteerd op BehandelingId.
+        */
         return collect(DB::table('Behandeling as b')
             ->leftJoin('BehandelingPerVoorraad as bpv', function ($join): void {
                 $join->on('bpv.BehandelingId', '=', 'b.Id')->where('bpv.IsActief', '=', 1);
@@ -238,6 +243,7 @@ class BehandelingController extends Controller
      */
     private function haalActieveBehandelingNamenOp(): Collection
     {
+        // Als stored procedures worden gebruikt, roep dan de procedure sp_behandelingen_overzicht aan met null om alle namen op te halen
         return collect(DB::select('SELECT Naam FROM Behandeling WHERE IsActief = 1 ORDER BY Id ASC'))
             ->pluck('Naam');
     }
@@ -247,10 +253,12 @@ class BehandelingController extends Controller
      */
     private function haalProductenPerBehandelingOp(int $behandelingId): Collection
     {
+        // Als stored procedures worden gebruikt, roep dan de procedure sp_producten_per_behandeling aan
         if ($this->gebruiktStoredProcedures()) {
             return collect(DB::select('CALL sp_producten_per_behandeling(?)', [$behandelingId]));
         }
 
+        // Fallback voor databases die geen stored procedures ondersteunen (zoals MySQL)
         return collect(DB::table('Behandeling as b')
             ->join('BehandelingPerVoorraad as bpv', function ($join): void {
                 $join->on('bpv.BehandelingId', '=', 'b.Id')->where('bpv.IsActief', '=', 1);
@@ -273,9 +281,15 @@ class BehandelingController extends Controller
      */
     private function haalProductDetailOp(int $productId): object|null
     {
+        // Als stored procedures worden gebruikt, roep dan de procedure sp_product_detail aan
         if ($this->gebruiktStoredProcedures()) {
             return collect(DB::select('CALL sp_product_detail(?)', [$productId]))->first();
         }
+
+        /* Fallback voor databases die geen stored procedures ondersteunen (zoals MySQL)
+        * De query haalt productdetails op, inclusief voorraad en leverancierinformatie.
+        * De resultaten worden gefilterd op actieve records en gesorteerd op product-ID.
+        */
 
         return DB::table('Product as p')
             ->leftJoin('Voorraad as v', function ($join): void {
@@ -295,16 +309,10 @@ class BehandelingController extends Controller
             ->first();
     }
 
-    /**
-     * Wijzig de verkoopprijs en opmerking via sp_product_verkoopprijs_bijwerken.
-     *
-     * De stored procedure dwingt de 30 procent-regel op databaseniveau af via
-     * SIGNAL (defense in depth); de fallback voor sqlite doet dezelfde controle.
-     *
-     * @return array{0: bool, 1: ?string}
-     */
+    
     private function wijzigVerkoopprijs(int $productId, float $nieuweVerkoopprijs, ?string $nieuweOpmerking): array
     {
+        // Als stored procedures worden gebruikt, roep dan de procedure sp_product_verkoopprijs_bijwerken aan
         if ($this->gebruiktStoredProcedures()) {
             try {
                 DB::statement('CALL sp_product_verkoopprijs_bijwerken(?, ?, ?)', [
@@ -319,7 +327,7 @@ class BehandelingController extends Controller
                 if (str_contains($e->getMessage(), 'Verkoopprijs moet minimaal 30 procent boven de inkoopprijs liggen')) {
                     return [false, 'Verkoopprijs moet minimaal 30 procent boven de inkoopprijs liggen'];
                 }
-
+                // De procedure gooit SQLSTATE 45000 met een leesbare melding als het product niet gevonden wordt
                 if (str_contains($e->getMessage(), 'Product niet gevonden')) {
                     return [false, 'Product niet gevonden'];
                 }
@@ -327,7 +335,7 @@ class BehandelingController extends Controller
                 throw $e;
             }
         }
-
+        // Fallback voor databases die geen stored procedures ondersteunen (zoals MySQL)
         $inkoopprijs = DB::table('Product')
             ->where('Id', $productId)
             ->where('IsActief', 1)
@@ -335,12 +343,14 @@ class BehandelingController extends Controller
 
         if ($inkoopprijs === null) {
             return [false, 'Product niet gevonden'];
-        }
+        }   
 
+        // Controleer de 30 procent-regel handmatig in de fallback
         if ($nieuweVerkoopprijs < (float) $inkoopprijs * 1.30) {
             return [false, 'Verkoopprijs moet minimaal 30 procent boven de inkoopprijs liggen'];
         }
 
+        // Update de verkoopprijs en opmerking in de Product-tabel
         DB::table('Product')
             ->where('Id', $productId)
             ->update([
