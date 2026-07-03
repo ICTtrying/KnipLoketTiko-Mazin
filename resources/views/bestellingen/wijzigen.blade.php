@@ -11,7 +11,8 @@
         </ol>
     </nav>
 
-    <h1 class="h3 mb-3">Bestelproduct wijzigen {{ $bestelproduct->ProductNaam }}</h1>
+    {{-- Alleen het statische tekstgedeelte is rood; de productnaam houdt de standaard donkere tekstkleur --}}
+    <h1 class="h3 mb-3"><span class="titel-kniploket">Bestelproduct wijzigen</span> <span>{{ $bestelproduct->ProductNaam }}</span></h1>
 
     <div class="card shadow-sm">
         <div class="card-body">
@@ -26,7 +27,8 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Bestelstatus</label>
-                        <input type="text" class="form-control bg-light" value="{{ $bestelproduct->Bestelstatus }}" readonly>
+                        {{-- Toon het leesbare statuslabel; de databasewaarde blijft intern ongewijzigd --}}
+                        <input type="text" class="form-control bg-light" value="{{ $statusLabels[$bestelproduct->Bestelstatus] ?? $bestelproduct->Bestelstatus }}" readonly>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Klant</label>
