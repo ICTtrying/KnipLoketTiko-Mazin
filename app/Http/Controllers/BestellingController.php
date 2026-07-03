@@ -388,8 +388,7 @@ class BestellingController extends Controller
         }
 
         if ($bestelstatus === 'Afgeleverd') {
-            // Exacte meldingtekst uit wireframe-10, inclusief punt (gelijk aan de stored procedure)
-            return [false, 'Aantal kan niet worden gewijzigd omdat de bestelling al is afgeleverd.'];
+            return [false, 'Aantal kan niet worden gewijzigd omdat de bestelling al is afgeleverd'];
         }
 
         DB::table('ProductPerBestelling')

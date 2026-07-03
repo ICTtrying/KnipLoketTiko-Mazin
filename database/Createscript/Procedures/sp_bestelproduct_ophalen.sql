@@ -5,6 +5,7 @@
 -- Return: resultset met BestellingId, BestelNummer, Bestelstatus, KlantNaam, Relatienummer,
 --         ProductPerBestellingId, ProductNaam, CategorieNaam, Merk, UnitPrijs, Aantal
 -- =============================================
+DELIMITER $$
 
 CREATE PROCEDURE sp_bestelproduct_ophalen(IN p_product_per_bestelling_id INT)
 BEGIN
@@ -31,4 +32,6 @@ BEGIN
       AND ppb.IsActief = 1
       AND b.IsActief = 1
     LIMIT 1;
-END
+END$$
+
+DELIMITER ;

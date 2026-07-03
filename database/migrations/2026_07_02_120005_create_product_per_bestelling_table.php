@@ -34,8 +34,8 @@ return new class extends Migration
             $table->dateTime('DatumAangemaakt');
             $table->dateTime('DatumGewijzigd');
 
-            $table->foreign('ProductId')->references('Id')->on('Product')->onDelete('cascade');
-            $table->foreign('BestellingId')->references('Id')->on('Bestelling')->onDelete('cascade');
+            $table->foreign('ProductId')->references('Id')->on('Product');
+            $table->foreign('BestellingId')->references('Id')->on('Bestelling');
         });
     }
 

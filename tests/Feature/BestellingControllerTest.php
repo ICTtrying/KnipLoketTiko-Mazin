@@ -115,7 +115,11 @@ class BestellingControllerTest extends TestCase
 
         $response->assertSessionHas('foutmelding', 'Gegevens zijn niet gewijzigd');
         $response->assertSessionHasErrors([
+<<<<<<< HEAD
             'aantal' => 'Aantal kan niet worden gewijzigd omdat de bestelling al is afgeleverd.',
+=======
+            'aantal' => 'Aantal kan niet worden gewijzigd omdat de bestelling al is afgeleverd',
+>>>>>>> 83f3a0ebd1c66b988e3fdbf58407ae4acdd44fa3
         ]);
         $this->assertDatabaseHas('ProductPerBestelling', [
             'Id' => $product->Id,

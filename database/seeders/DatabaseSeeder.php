@@ -14,9 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // BestellingSeeder eerst: de producten moeten bestaan voordat de
-        // BehandelingSeeder de voorraad- en behandelingsdata kan koppelen
         $this->call(BestellingSeeder::class);
-        $this->call(BehandelingSeeder::class);
     }
 }

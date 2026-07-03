@@ -7,6 +7,7 @@
 --         ProductPerBestellingId, ProductId, ProductNaam, CategorieNaam, Merk, Aantal,
 --         UnitPrijs, BTWPercentage, Korting, RegelTotaal
 -- =============================================
+DELIMITER $$
 
 CREATE PROCEDURE sp_bestelling_producten_overzicht(IN p_bestelling_id INT)
 BEGIN
@@ -37,5 +38,6 @@ BEGIN
       AND b.IsActief = 1
       AND b.Id = p_bestelling_id
     ORDER BY p.Naam;
-END
+END$$
 
+DELIMITER ;

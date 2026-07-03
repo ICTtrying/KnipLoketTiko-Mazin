@@ -6,6 +6,7 @@
 -- Return: resultset met BestellingId, BestelNummer, KlantNaam, Relatienummer, Datum, Tijd,
 --         Bestelstatus, AantalProducten, Totaal
 -- =============================================
+DELIMITER $$
 
 -- De parameter krijgt expliciet de collation van de tabellen (utf8mb4_unicode_ci);
 -- zonder deze duiding gebruikt MySQL 8 de database-default (utf8mb4_0900_ai_ci)
@@ -31,5 +32,6 @@ BEGIN
       AND (p_status IS NULL OR p_status = 'Alle statussen' OR b.Bestelstatus = p_status)
     GROUP BY b.Id, b.BestelNummer, k.Voornaam, k.Tussenvoegsel, k.Achternaam, k.Relatienummer, b.Datum, b.Tijd, b.Bestelstatus
     ORDER BY b.Datum DESC, b.Tijd DESC;
-END
+END$$
 
+DELIMITER ;

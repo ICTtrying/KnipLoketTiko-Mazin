@@ -5,6 +5,7 @@
 --             p_succes BIT OUT - resultaatindicator, p_foutmelding VARCHAR(255) OUT - foutmelding
 -- Return: geen resultset; vult p_succes en p_foutmelding
 -- =============================================
+DELIMITER $$
 
 CREATE PROCEDURE sp_bestelproduct_wijzigen(
     IN p_id INT,
@@ -29,8 +30,7 @@ BEGIN
         SET p_foutmelding = 'Bestelproduct niet gevonden';
     ELSEIF v_bestelstatus = 'Afgeleverd' THEN
         SET p_succes = 0;
-        -- Exacte meldingtekst uit wireframe-10, inclusief punt aan het einde
-        SET p_foutmelding = 'Aantal kan niet worden gewijzigd omdat de bestelling al is afgeleverd.';
+        SET p_foutmelding = 'Aantal kan niet worden gewijzigd omdat de bestelling al is afgeleverd';
     ELSE
         UPDATE ProductPerBestelling
         SET Aantal = p_nieuw_aantal,
@@ -40,5 +40,6 @@ BEGIN
         SET p_succes = 1;
         SET p_foutmelding = NULL;
     END IF;
-END
+END$$
 
+DELIMITER ;
