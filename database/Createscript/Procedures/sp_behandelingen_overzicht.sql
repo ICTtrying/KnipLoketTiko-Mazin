@@ -10,7 +10,9 @@
 -- =============================================
 DELIMITER $$
 
-CREATE PROCEDURE sp_behandelingen_overzicht(IN p_naam VARCHAR(100))
+-- De COLLATE-clausule voorkomt een collation-conflict: de tabellen gebruiken
+-- utf8mb4_unicode_ci, terwijl MySQL 8 parameters standaard utf8mb4_0900_ai_ci geeft
+CREATE PROCEDURE sp_behandelingen_overzicht(IN p_naam VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci)
 BEGIN
     SELECT
         b.Id AS BehandelingId,
