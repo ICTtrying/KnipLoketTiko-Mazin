@@ -25,19 +25,20 @@ class BehandelingController extends Controller
      */
     public function index(Request $request): View|RedirectResponse
     {
+        // try-catch blok om validatie- en andere fouten af te handelen
         try {
             $gevalideerd = $request->validate([
                 'behandeling' => ['nullable', 'string', 'max:100'],
             ], [
                 'behandeling.max' => 'De geselecteerde behandeling is ongeldig.',
             ]);
-
+            // Log de opgevraagde behandeling voor debugging en auditing
             $naam = $gevalideerd['behandeling'] ?? 'Alle behandelingen';
             Log::info('Behandelingenoverzicht opgevraagd', ['behandeling' => $naam]);
 
             $behandelingen = $this->haalBehandelingenOp($naam);
             $paginator = $this->maakPaginatie($behandelingen, $request, 4);
-
+            // Terugkoppeling naar de gebruiker wanneer het filter niets oplevert
             return view('behandelingen.index', [
                 'behandelingen' => $paginator,
                 'behandelingNamen' => $this->haalActieveBehandelingNamenOp(),
@@ -62,12 +63,15 @@ class BehandelingController extends Controller
      */
     public function producten(int $behandelingId): View|RedirectResponse
     {
+        // try-catch voor producten per behandeling, met logging en foutafhandeling
         try {
             Log::info('Producten per behandeling opgevraagd', ['behandeling_id' => $behandelingId]);
 
+            //
             $behandeling = Behandeling::query()->where('IsActief', 1)->findOrFail($behandelingId);
             $producten = $this->haalProductenPerBehandelingOp($behandelingId);
 
+            // Terugkoppeling naar de gebruiker wanneer er geen producten zijn voor de behandeling
             return view('behandelingen.producten', [
                 'behandeling' => $behandeling,
                 'producten' => $producten,
@@ -84,15 +88,16 @@ class BehandelingController extends Controller
      */
     public function productDetail(int $productId): View|RedirectResponse
     {
+        // try-catch voor productdetail, met logging en foutafhandeling
         try {
             Log::info('Productdetail opgevraagd', ['product_id' => $productId]);
-
+        // Haal productdetail op via stored procedure of query builder fallback
             $product = $this->haalProductDetailOp($productId);
 
             if ($product === null) {
                 abort(404, 'Product niet gevonden.');
             }
-
+        // Render de productdetailpagina met de opgehaalde gegevens
             return view('behandelingen.productdetail', [
                 'product' => $product,
             ]);
