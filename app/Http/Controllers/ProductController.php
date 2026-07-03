@@ -43,6 +43,8 @@ class ProductController extends Controller
                 'producten' => $paginator,
                 'categorieen' => $this->haalActieveCategorieenOp(),
                 'geselecteerdeCategorieId' => $categorieId,
+                // Terugkoppeling naar de gebruiker wanneer het filter geen producten oplevert
+                'legeMelding' => $producten->isEmpty() ? 'Er zijn geen producten bekend binnen de geselecteerde categorie' : null,
             ]);
         } catch (ValidationException $e) {
             Log::warning('Validatiefout bij categorie-filter productenoverzicht', ['errors' => $e->errors()]);

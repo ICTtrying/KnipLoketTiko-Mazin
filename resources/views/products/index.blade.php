@@ -43,8 +43,10 @@
         <div class="card-body">
             <p class="mb-3">Gevonden producten - {{ $producten->total() }} product(en)</p>
 
-            {{-- Wireframe-02: paginering onder de teksregel, boven de tabel --}}
-            {{ $producten->links('pagination::bootstrap-5') }}
+            {{-- Wireframe-02: paginering onder de teksregel, boven de tabel (verborgen bij 0 resultaten) --}}
+            @if ($producten->total() > 0)
+                {{ $producten->links('pagination::bootstrap-5') }}
+            @endif
 
             <div class="table-responsive">
                 <table class="table table-bordered align-middle">
@@ -60,7 +62,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($producten as $product)
+                        @forelse ($producten as $product)
                             <tr>
                                 <td>{{ $product->Naam }}</td>
                                 <td>{{ $product->CategorieNaam }}</td>
@@ -73,7 +75,12 @@
                                     <a href="#" class="btn btn-outline-primary btn-sm">Details</a>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            {{-- Wireframe-04: gecentreerde melding wanneer het filter geen producten oplevert --}}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">{{ $legeMelding }}</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
