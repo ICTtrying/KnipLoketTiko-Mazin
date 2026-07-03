@@ -37,4 +37,43 @@
             </form>
         </div>
     </div>
+
+    {{-- Wireframe-02: resultatenblok in een whitecard onder de filterbalk --}}
+    <div class="card">
+        <div class="card-body">
+            <p class="mb-3">Gevonden producten - {{ $producten->total() }} product(en)</p>
+
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead class="bg-danger text-white">
+                        <tr>
+                            <th>Product</th>
+                            <th>Categorie</th>
+                            <th>Merk</th>
+                            <th>EAN-code</th>
+                            <th>Verkoopprijs</th>
+                            <th>Voorraad</th>
+                            <th>Actie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($producten as $product)
+                            <tr>
+                                <td>{{ $product->Naam }}</td>
+                                <td>{{ $product->CategorieNaam }}</td>
+                                <td>{{ $product->Merk }}</td>
+                                <td>{{ $product->EANcode }}</td>
+                                <td>EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
+                                <td>{{ $product->AantalOpVoorraad }}</td>
+                                <td>
+                                    {{-- Placeholder: detailpagina volgt in een latere user story --}}
+                                    <a href="#" class="btn btn-outline-primary btn-sm">Details</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
