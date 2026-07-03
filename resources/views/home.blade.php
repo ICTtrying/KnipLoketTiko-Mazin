@@ -3,18 +3,18 @@
 @section('title', 'Home')
 
 @section('content')
-    <div class="card shadow-sm">
-        <div class="card-body p-4">
-            <span class="badge text-bg-warning mb-2">Kapsalon applicatie</span>
-            <h1 class="h3 mb-1">Eigenaar</h1>
+    <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="p-4">
+            <span class="mb-2 inline-block rounded bg-amber-400 px-2 py-1 text-xs font-bold text-slate-900">Kapsalon applicatie</span>
+            <h1 class="mb-1 text-2xl font-semibold">Eigenaar</h1>
             <nav aria-label="breadcrumb" class="mb-3">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item active" aria-current="page">Home</li>
+                <ol class="text-sm text-slate-500">
+                    <li aria-current="page">Home</li>
                 </ol>
             </nav>
-            <p class="text-muted">Welkom bij Kniploket Tiko - hier regel je eenvoudig klanten, afspraken en planning voor de salon.</p>
+            <p class="text-slate-500">Welkom bij Kniploket Tiko - hier regel je eenvoudig klanten, afspraken en planning voor de salon.</p>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+            <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 @php
                     /** @var array<string, array{omschrijving: string, url: string}> $modules Weergavelijst van de dashboardkaarten uit wireframe-01 */
                     $modules = [
@@ -30,14 +30,10 @@
                 @endphp
 
                 @foreach ($modules as $naam => $module)
-                    <div class="col">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h2 class="h6">{{ $naam }}</h2>
-                                <p class="small text-muted mb-3">{{ $module['omschrijving'] }}</p>
-                                <a href="{{ $module['url'] }}" class="btn btn-outline-primary btn-sm">Openen</a>
-                            </div>
-                        </div>
+                    <div class="rounded-lg border border-slate-200 bg-white p-4">
+                        <h2 class="text-base font-semibold">{{ $naam }}</h2>
+                        <p class="mb-3 text-sm text-slate-500">{{ $module['omschrijving'] }}</p>
+                        <a href="{{ $module['url'] }}" class="inline-flex items-center justify-center rounded border border-blue-600 px-2.5 py-1 text-sm font-medium text-blue-600 hover:bg-blue-50">Openen</a>
                     </div>
                 @endforeach
             </div>
