@@ -15,7 +15,7 @@
     {{-- Filterkaart --}}
     <div class="card shadow-sm mb-3">
         <div class="card-body">
-            <form met>name('behandelingen.')hod="GET" action="{{ route('behandelingen.index') }}">
+            <form method="GET" action="{{ route('behandelingen.index') }}">
                 <div class="d-flex align-items-end gap-2 flex-wrap justify-content-end">
                     <div>
                         <label for="status" class="form-label mb-1">Status selecteren</label>

@@ -25,7 +25,7 @@
                         'Afspraken' => ['omschrijving' => 'Plan, bekijk en beheer afspraken met status en tijd.', 'url' => '#'],
                         'Behandelingen' => ['omschrijving' => 'Overzicht van behandelingen, duur en prijsinformatie.', 'url' => '#'],
                         'Producten' => ['omschrijving' => 'Bekijk en beheer producten binnen het assortiment.', 'url' => '#'],
-                        'Bestellingen' => ['omschrijving' => 'Bekijk en beheer klantbestellingen en bestelstatus.', 'url' => route('bestellingen.index')],
+                        'Bestellingen' => ['omschrijving' => 'Bekijk en beheer klantbestellingen en bestelstatus.', 'url' => '#'],
                     ];
                 @endphp
 

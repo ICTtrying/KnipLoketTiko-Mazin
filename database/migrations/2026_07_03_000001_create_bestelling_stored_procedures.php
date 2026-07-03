@@ -14,6 +14,7 @@ return new class extends Migration
 {
     /** @var list<string> Bestandsnamen van de stored procedures, in aanmaakvolgorde */
     private array $procedureBestanden = [
+        'sp_behandelingen_overzicht.sql',
         'sp_bestellingen_overzicht.sql',
         'sp_bestelling_producten_overzicht.sql',
         'sp_bestelproduct_ophalen.sql',
