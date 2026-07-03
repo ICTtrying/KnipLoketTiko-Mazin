@@ -22,7 +22,14 @@ class ProductController extends Controller
      */
     public function index(Request $request): View|RedirectResponse
     {
-        $categorieId = $request->filled('categorie') ? (int) $request->input('categorie') : null;
+        $gevalideerd = $request->validate([
+            'categorie' => ['nullable', 'integer', 'min:0'],
+        ], [
+            'categorie.integer' => 'De geselecteerde categorie is ongeldig.',
+            'categorie.min' => 'De geselecteerde categorie is ongeldig.',
+        ]);
+
+        $categorieId = isset($gevalideerd['categorie']) ? (int) $gevalideerd['categorie'] : null;
 
         $producten = $this->haalProductenOp($categorieId);
         $paginator = $this->maakPaginatie($producten, $request, 4);
