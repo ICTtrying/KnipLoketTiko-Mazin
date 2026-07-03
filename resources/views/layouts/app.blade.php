@@ -35,7 +35,7 @@
                         <li class="nav-item"><a class="nav-link" href="#">Accounts</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Medewerkers</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Beschikbaarheid</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Klanten</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('klanten.index') }}">Klanten</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Afspraken</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Behandelingen</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Producten</a></li>
