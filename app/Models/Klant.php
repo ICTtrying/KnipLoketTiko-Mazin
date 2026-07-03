@@ -7,23 +7,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Model voor de tabel Product.
+ * Model voor de tabel Klant.
  */
-class Product extends Model
+class Klant extends Model
 {
-    protected $table = 'Product';
+    protected $table = 'Klant';
 
     protected $primaryKey = 'Id';
 
     protected $fillable = [
-        'CategorieId',
+        'UserId',
         'Naam',
-        'Omschrijving',
-        'Merk',
-        'EANcode',
-        'Houdbaarheidsdatum',
-        'InkoopPrijs',
-        'VerkoopPrijs',
+        'Telefoonnummer',
+        'WensenAllergieen',
         'IsActief',
         'Opmerking',
         'DatumAangemaakt',
@@ -34,13 +30,13 @@ class Product extends Model
 
     public const UPDATED_AT = 'DatumGewijzigd';
 
-    public function categorie(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Categorie::class, 'CategorieId', 'Id');
+        return $this->belongsTo(User::class, 'UserId', 'Id');
     }
 
-    public function productRegels(): HasMany
+    public function bestellingen(): HasMany
     {
-        return $this->hasMany(ProductPerBestelling::class, 'ProductId', 'Id');
+        return $this->hasMany(Bestelling::class, 'KlantId', 'Id');
     }
 }
