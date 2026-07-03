@@ -21,7 +21,7 @@
                         'Accounts' => ['omschrijving' => 'Beheer gebruikersaccounts en roltoewijzigingen.', 'url' => '#'],
                         'Medewerkers' => ['omschrijving' => 'Overzicht van medewerkers en hun basisgegevens.', 'url' => '#'],
                         'Beschikbaarheid' => ['omschrijving' => 'Bekijk de beschikbaarheid van medewerkers per dag en tijd.', 'url' => '#'],
-                        'Klanten' => ['omschrijving' => 'Bekijk en filter klantgegevens op postcode en contactinformatie.', 'url' => '#'],
+                        'Klanten' => ['omschrijving' => 'Bekijk en filter klantgegevens op postcode en contactinformatie.', 'url' => route('klanten.index')],
                         'Afspraken' => ['omschrijving' => 'Plan, bekijk en beheer afspraken met status en tijd.', 'url' => '#'],
                         'Behandelingen' => ['omschrijving' => 'Overzicht van behandelingen, duur en prijsinformatie.', 'url' => route('behandelingen.index')],
                         'Producten' => ['omschrijving' => 'Bekijk en beheer producten binnen het assortiment.', 'url' => route('products.index')],
