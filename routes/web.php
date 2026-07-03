@@ -6,9 +6,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
 
-// Routes voor het productenoverzicht (User Story 07); wijzigen (User Story 08) volgt later
+// Routes voor het productenoverzicht (User Story 07) en productdetail/wijzigen (User Story 08)
 Route::prefix('producten')->name('products.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');
+    Route::get('/{id}', [ProductController::class, 'show'])->name('show');
+    Route::get('/{id}/wijzigen', [ProductController::class, 'edit'])->name('edit');
+    Route::put('/{id}/wijzigen', [ProductController::class, 'update'])->name('update');
 });
 
 Route::prefix('bestellingen')->name('bestellingen.')->group(function () {

@@ -6,6 +6,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -74,27 +75,103 @@ class ProductController extends Controller
     }
 
     /**
-     * Niet gebruikt, maar aanwezig voor CRUD-consistentie.
+     * Toon de detailpagina van één product (User Story 08, Wireframe-03).
      */
-    public function show(int $id): RedirectResponse
+    public function show(int $id): View|RedirectResponse
     {
-        abort(404);
+        try {
+            Log::info('Productdetail opgevraagd', ['product_id' => $id]);
+
+            $product = $this->haalProductDetailOp($id);
+
+            if ($product === null) {
+                abort(404, 'Product niet gevonden.');
+            }
+
+            return view('products.show', [
+                'product' => $product,
+            ]);
+        } catch (Throwable $e) {
+            Log::error('Fout bij ophalen productdetail', ['product_id' => $id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('products.index')->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van het product.');
+        }
     }
 
     /**
-     * Wordt ingevuld bij User Story 08 (product wijzigen).
+     * Toon het wijzigformulier voor de houdbaarheidsdatum van een product
+     * (User Story 08, Wireframe-04).
      */
-    public function edit(int $id): RedirectResponse
+    public function edit(int $id): View|RedirectResponse
     {
-        abort(404);
+        try {
+            Log::info('Product wijzig-formulier geopend', ['product_id' => $id]);
+
+            $product = $this->haalProductDetailOp($id);
+
+            if ($product === null) {
+                abort(404, 'Product niet gevonden.');
+            }
+
+            return view('products.update', [
+                'product' => $product,
+            ]);
+        } catch (Throwable $e) {
+            Log::error('Fout bij openen wijzig-formulier product', ['product_id' => $id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('products.index')->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van het product.');
+        }
     }
 
     /**
-     * Wordt ingevuld bij User Story 08 (product wijzigen).
+     * Verwerk het wijzigen van de houdbaarheidsdatum van een product.
+     *
+     * Businessregel (User Story 08): de houdbaarheidsdatum mag met maximaal
+     * 7 dagen worden verlengd; die controle zit in de stored procedure.
      */
     public function update(Request $request, int $id): RedirectResponse
     {
-        abort(404);
+        try {
+            $gevalideerd = $request->validate([
+                'nieuwe_houdbaarheidsdatum' => ['required', 'date'],
+            ], [
+                'nieuwe_houdbaarheidsdatum.required' => 'Het veld Nieuwe houdbaarheidsdatum is verplicht.',
+                'nieuwe_houdbaarheidsdatum.date' => 'Het veld Nieuwe houdbaarheidsdatum moet een geldige datum zijn.',
+            ]);
+
+            Log::info('Poging tot wijzigen houdbaarheidsdatum product', [
+                'product_id' => $id,
+                'nieuwe_datum' => $gevalideerd['nieuwe_houdbaarheidsdatum'],
+            ]);
+
+            [$succes, $foutmelding] = $this->wijzigHoudbaarheidsdatum($id, $gevalideerd['nieuwe_houdbaarheidsdatum']);
+
+            if (! $succes) {
+                Log::warning('Wijzigen houdbaarheidsdatum geweigerd door businessregel', [
+                    'product_id' => $id,
+                    'reden' => $foutmelding,
+                ]);
+
+                return back()
+                    ->withInput()
+                    ->with('foutmelding', 'Gegevens niet bijgewerkt')
+                    ->withErrors(['nieuwe_houdbaarheidsdatum' => $foutmelding ?? 'De houdbaarheidsdatum kon niet worden gewijzigd.']);
+            }
+
+            Log::info('Houdbaarheidsdatum product succesvol gewijzigd', ['product_id' => $id]);
+
+            return redirect()
+                ->route('products.show', $id)
+                ->with('succesmelding', 'Houdbaarheidsdatum bijgewerkt');
+        } catch (ValidationException $e) {
+            Log::warning('Validatiefout bij wijzigen houdbaarheidsdatum', ['product_id' => $id, 'errors' => $e->errors()]);
+
+            return back()->withInput()->with('foutmelding', 'Gegevens niet bijgewerkt')->withErrors($e->errors());
+        } catch (Throwable $e) {
+            Log::error('Fout bij wijzigen houdbaarheidsdatum product', ['product_id' => $id, 'error' => $e->getMessage()]);
+
+            return back()->with('foutmelding', 'Er is een onverwachte fout opgetreden.');
+        }
     }
 
     /**
@@ -138,6 +215,84 @@ class ProductController extends Controller
             ->orderBy('p.Id')
             ->selectRaw('p.Id, p.Naam, c.Naam AS CategorieNaam, p.Merk, p.EANcode, p.VerkoopPrijs, COALESCE(v.AantalOpVoorraad, 0) AS AantalOpVoorraad')
             ->get());
+    }
+
+    /**
+     * Haal de detailgegevens van één product op via de stored procedure GetProductDetail.
+     *
+     * Voor databases zonder stored procedures (zoals SQLite in de tests)
+     * wordt een gelijkwaardige query builder-fallback gebruikt.
+     */
+    private function haalProductDetailOp(int $productId): object|null
+    {
+        if ($this->gebruiktStoredProcedures()) {
+            return collect(DB::select('CALL GetProductDetail(?)', [$productId]))->first();
+        }
+
+        return DB::table('Product as p')
+            ->leftJoin('Voorraad as v', function ($join): void {
+                $join->on('v.ProductId', '=', 'p.Id')
+                    ->where('v.IsActief', '=', 1);
+            })
+            ->leftJoin('LeverancierOrder as lo', function ($join): void {
+                $join->on('lo.ProductId', '=', 'p.Id')
+                    ->where('lo.IsActief', '=', 1)
+                    ->whereRaw('lo.Id = (SELECT MAX(lo2.Id) FROM LeverancierOrder lo2 WHERE lo2.ProductId = p.Id AND lo2.IsActief = 1)');
+            })
+            ->leftJoin('Leverancier as l', function ($join): void {
+                $join->on('l.Id', '=', 'lo.LeverancierId')
+                    ->where('l.IsActief', '=', 1);
+            })
+            ->where('p.Id', $productId)
+            ->where('p.IsActief', 1)
+            ->selectRaw('p.Id, p.Naam, p.Merk, p.Omschrijving, p.EANcode, p.Houdbaarheidsdatum, p.InkoopPrijs, p.VerkoopPrijs, COALESCE(v.AantalOpVoorraad, 0) AS AantalOpVoorraad, l.Naam AS LeverancierNaam, l.Postcode AS LeverancierPostcode, l.Plaats AS LeverancierPlaats, l.Email AS LeverancierEmail, l.Mobiel AS LeverancierMobiel, p.Opmerking')
+            ->first();
+    }
+
+    /**
+     * Wijzig de houdbaarheidsdatum via stored procedure of query fallback.
+     *
+     * @return array{0: bool, 1: ?string}
+     */
+    private function wijzigHoudbaarheidsdatum(int $productId, string $nieuweDatum): array
+    {
+        if ($this->gebruiktStoredProcedures()) {
+            DB::statement('SET @succes = 0');
+            DB::statement('SET @foutmelding = NULL');
+            DB::statement('CALL UpdateProductHoudbaarheidsdatum(?, ?, @succes, @foutmelding)', [
+                $productId,
+                $nieuweDatum,
+            ]);
+
+            $resultaat = DB::select('SELECT @succes AS succes, @foutmelding AS foutmelding');
+
+            return [
+                (bool) ($resultaat[0]->succes ?? false),
+                $resultaat[0]->foutmelding ?? null,
+            ];
+        }
+
+        $huidigeDatum = DB::table('Product')
+            ->where('Id', $productId)
+            ->where('IsActief', 1)
+            ->value('Houdbaarheidsdatum');
+
+        if ($huidigeDatum === null) {
+            return [false, 'Product niet gevonden'];
+        }
+
+        if (Carbon::parse($huidigeDatum)->diffInDays(Carbon::parse($nieuweDatum), false) > 7) {
+            return [false, 'De houdbaarheidsdatum is met meer dan 7 dagen verlengd.'];
+        }
+
+        DB::table('Product')
+            ->where('Id', $productId)
+            ->update([
+                'Houdbaarheidsdatum' => $nieuweDatum,
+                'DatumGewijzigd' => now(),
+            ]);
+
+        return [true, null];
     }
 
     /**

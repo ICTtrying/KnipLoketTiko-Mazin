@@ -75,8 +75,7 @@
                                 <td class="px-4 py-3">EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
                                 <td class="px-4 py-3">{{ $product->AantalOpVoorraad }}</td>
                                 <td class="px-4 py-3">
-                                    {{-- Placeholder: detailpagina volgt in een latere user story --}}
-                                    <a href="#" class="inline-flex items-center rounded border border-blue-300 bg-white px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50">
+                                    <a href="{{ route('products.show', $product->Id) }}" class="inline-flex items-center rounded border border-blue-300 bg-white px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50">
                                         Details
                                     </a>
                                 </td>
