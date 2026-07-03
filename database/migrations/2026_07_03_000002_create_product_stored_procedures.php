@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * Migration die de stored procedure GetAllProducten voor de Product-module registreert.
  *
- * De procedure staat in database/sql/procedures/Sp_GetAllProducten.sql. De DELIMITER-regels
+ * De procedure staat in database/Createscript/Procedures/Sp_GetAllProducten.sql. De DELIMITER-regels
  * in dat bestand zijn bedoeld voor handmatige uitvoering in bijv. phpMyAdmin/Workbench en
  * worden hier verwijderd, omdat de server die client-directive niet kent.
  */
@@ -20,7 +20,7 @@ return new class extends Migration
             return;
         }
 
-        $sql = file_get_contents(database_path('sql/procedures/Sp_GetAllProducten.sql'));
+        $sql = file_get_contents(database_path('Createscript/Procedures/Sp_GetAllProducten.sql'));
 
         // Verwijder de DELIMITER-directives en de $$-scheidingstekens voor uitvoering via PDO
         $sql = preg_replace('/^\s*DELIMITER.*$/mi', '', $sql);

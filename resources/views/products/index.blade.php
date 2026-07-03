@@ -11,10 +11,10 @@
         </ol>
     </nav>
 
-    <h1 class="h3 text-danger mb-3">Overzicht producten</h1>
+    <h1 class="h3 titel-kniploket mb-3">Overzicht producten</h1>
 
     {{-- Wireframe-02/03: filterbalk in een whitecard boven de tabel --}}
-    <div class="card mb-3">
+    <div class="card shadow-sm mb-3">
         <div class="card-body">
             <form method="GET" action="{{ route('products.index') }}">
                 <div class="d-flex align-items-end gap-2 flex-wrap">
@@ -39,18 +39,18 @@
     </div>
 
     {{-- Wireframe-02: resultatenblok in een whitecard onder de filterbalk --}}
-    <div class="card">
+    <div class="card shadow-sm">
         <div class="card-body">
-            <p class="mb-3">Gevonden producten - {{ $producten->total() }} product(en)</p>
+            <p class="text-muted small mb-2">Gevonden producten - {{ $producten->total() }} product(en)</p>
 
             {{-- Wireframe-02: paginering onder de teksregel, boven de tabel (verborgen bij 0 resultaten) --}}
             @if ($producten->total() > 0)
-                {{ $producten->links('pagination::bootstrap-5') }}
+                {{ $producten->links('pagination.kniploket') }}
             @endif
 
             <div class="table-responsive">
-                <table class="table table-bordered align-middle">
-                    <thead class="bg-danger text-white">
+                <table class="table align-middle mb-0">
+                    <thead class="tabel-header-kniploket">
                         <tr>
                             <th>Product</th>
                             <th>Categorie</th>

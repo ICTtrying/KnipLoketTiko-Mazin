@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bestelling;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -11,15 +12,19 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 /**
  * Controller voor het beheren van bestellingen.
+ *
+ * Op MySQL/MariaDB lopen alle lees- en schrijfacties via stored procedures;
+ * op sqlite (testomgeving) wordt een gelijkwaardige query-fallback gebruikt.
  */
 class BestellingController extends Controller
 {
     /**
-     * Toon het overzicht van alle bestellingen.
+     * Toon het overzicht van alle bestellingen, optioneel gefilterd op status.
      */
     public function index(Request $request): View|RedirectResponse
     {
@@ -34,7 +39,10 @@ class BestellingController extends Controller
             return view('bestellingen.index', [
                 'bestellingen' => $paginator,
                 'geselecteerdeStatus' => $status,
+                'statusLabels' => Bestelling::STATUS_LABELS,
             ]);
+        } catch (HttpExceptionInterface|ModelNotFoundException $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij ophalen bestellingen overzicht', ['error' => $e->getMessage()]);
 
@@ -49,6 +57,8 @@ class BestellingController extends Controller
     {
         try {
             abort(404);
+        } catch (HttpExceptionInterface $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij create bestelling', ['error' => $e->getMessage()]);
 
@@ -63,6 +73,8 @@ class BestellingController extends Controller
     {
         try {
             abort(404);
+        } catch (HttpExceptionInterface $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij store bestelling', ['error' => $e->getMessage()]);
 
@@ -84,7 +96,10 @@ class BestellingController extends Controller
             return view('bestellingen.producten', [
                 'bestelling' => $bestelling,
                 'producten' => $producten,
+                'statusLabels' => Bestelling::STATUS_LABELS,
             ]);
+        } catch (HttpExceptionInterface|ModelNotFoundException $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij ophalen producten per bestelling', ['bestelling_id' => $id, 'error' => $e->getMessage()]);
 
@@ -99,6 +114,8 @@ class BestellingController extends Controller
     {
         try {
             abort(404);
+        } catch (HttpExceptionInterface $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij edit bestelling', ['error' => $e->getMessage()]);
 
@@ -113,6 +130,8 @@ class BestellingController extends Controller
     {
         try {
             abort(404);
+        } catch (HttpExceptionInterface $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij update bestelling', ['error' => $e->getMessage()]);
 
@@ -127,6 +146,8 @@ class BestellingController extends Controller
     {
         try {
             abort(404);
+        } catch (HttpExceptionInterface $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij destroy bestelling', ['error' => $e->getMessage()]);
 
@@ -152,7 +173,10 @@ class BestellingController extends Controller
             return view('bestellingen.wijzigen', [
                 'bestelling' => $bestelling,
                 'bestelproduct' => $bestelproduct,
+                'statusLabels' => Bestelling::STATUS_LABELS,
             ]);
+        } catch (HttpExceptionInterface|ModelNotFoundException $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij openen wijzig-formulier bestelproduct', ['id' => $id, 'error' => $e->getMessage()]);
 
@@ -202,6 +226,8 @@ class BestellingController extends Controller
             Log::warning('Validatiefout bij wijzigen bestelproduct', ['id' => $id, 'errors' => $e->errors()]);
 
             return back()->withInput()->with('foutmelding', 'Gegevens zijn niet gewijzigd')->withErrors($e->errors());
+        } catch (HttpExceptionInterface|ModelNotFoundException $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij wijzigen bestelproduct', ['id' => $id, 'error' => $e->getMessage()]);
 
@@ -233,7 +259,20 @@ class BestellingController extends Controller
     }
 
     /**
-     * Haal het bestellingenoverzicht op via stored procedure of query fallback.
+     * Stel de weergavenaam van de klant samen uit Voornaam/Tussenvoegsel/Achternaam.
+     * De Klant-tabel heeft geen Naam-kolom; dit spiegelt de CONCAT_WS in de stored procedures.
+     */
+    private function steltKlantNaamSamen(object $rij): object
+    {
+        $rij->KlantNaam = collect([$rij->Voornaam ?? null, $rij->Tussenvoegsel ?? null, $rij->Achternaam ?? null])
+            ->filter()
+            ->implode(' ');
+
+        return $rij;
+    }
+
+    /**
+     * Haal het bestellingenoverzicht op via stored procedure of query-fallback.
      */
     private function haalBestellingenOp(string $status): Collection
     {
@@ -251,20 +290,17 @@ class BestellingController extends Controller
             })
             ->where('b.IsActief', 1)
             ->when($status !== 'Alle statussen', fn ($query) => $query->where('b.Bestelstatus', $status))
-            ->groupBy('b.Id', 'b.BestelNummer', 'k.Naam', 'k.Id', 'b.Datum', 'b.Tijd', 'b.Bestelstatus')
+            ->groupBy('b.Id', 'b.BestelNummer', 'k.Voornaam', 'k.Tussenvoegsel', 'k.Achternaam', 'k.Relatienummer', 'b.Datum', 'b.Tijd', 'b.Bestelstatus')
             ->orderByDesc('b.Datum')
             ->orderByDesc('b.Tijd')
-            ->selectRaw('b.Id AS BestellingId, b.BestelNummer, k.Id AS KlantId, k.Naam AS KlantNaam, b.Datum, b.Tijd, b.Bestelstatus, COUNT(ppb.Id) AS AantalProducten, COALESCE(SUM(ppb.UnitPrijs * ppb.Aantal * (1 - ppb.Korting / 100) * (1 + ppb.BTWPercentage / 100)), 0) AS Totaal')
+            // Delen door 100.0 (niet 100): sqlite doet anders integer-deling waardoor BTW en korting wegvallen
+            ->selectRaw('b.Id AS BestellingId, b.BestelNummer, k.Voornaam, k.Tussenvoegsel, k.Achternaam, k.Relatienummer, b.Datum, b.Tijd, b.Bestelstatus, COUNT(ppb.Id) AS AantalProducten, COALESCE(SUM(ppb.UnitPrijs * ppb.Aantal * (1 - ppb.Korting / 100.0) * (1 + ppb.BTWPercentage / 100.0)), 0) AS Totaal')
             ->get()
-            ->map(function ($rij): object {
-                $rij->Relatienummer = sprintf('KL-2026-%03d', $rij->KlantId);
-
-                return $rij;
-            }));
+            ->map(fn (object $rij): object => $this->steltKlantNaamSamen($rij)));
     }
 
     /**
-     * Haal de productregels per bestelling op via stored procedure of query fallback.
+     * Haal de productregels per bestelling op via stored procedure of query-fallback.
      */
     private function haalProductenPerBestellingOp(int $bestellingId): Collection
     {
@@ -281,25 +317,22 @@ class BestellingController extends Controller
             ->where('b.IsActief', 1)
             ->where('b.Id', $bestellingId)
             ->orderBy('p.Naam')
-            ->selectRaw('b.Id AS BestellingId, b.BestelNummer, b.Bestelstatus, k.Id AS KlantId, k.Naam AS KlantNaam, ppb.Id AS ProductPerBestellingId, p.Id AS ProductId, p.Naam AS ProductNaam, c.Naam AS CategorieNaam, p.Merk, ppb.Aantal, ppb.UnitPrijs, ppb.BTWPercentage, ppb.Korting, (ppb.UnitPrijs * ppb.Aantal * (1 - ppb.Korting / 100) * (1 + ppb.BTWPercentage / 100)) AS RegelTotaal')
+            // Delen door 100.0 (niet 100): sqlite doet anders integer-deling waardoor BTW en korting wegvallen
+            ->selectRaw('b.Id AS BestellingId, b.BestelNummer, b.Bestelstatus, k.Voornaam, k.Tussenvoegsel, k.Achternaam, k.Relatienummer, ppb.Id AS ProductPerBestellingId, p.Id AS ProductId, p.Naam AS ProductNaam, c.Naam AS CategorieNaam, p.Merk, ppb.Aantal, ppb.UnitPrijs, ppb.BTWPercentage, ppb.Korting, (ppb.UnitPrijs * ppb.Aantal * (1 - ppb.Korting / 100.0) * (1 + ppb.BTWPercentage / 100.0)) AS RegelTotaal')
             ->get()
-            ->map(function ($rij): object {
-                $rij->Relatienummer = sprintf('KL-2026-%03d', $rij->KlantId);
-
-                return $rij;
-            }));
+            ->map(fn (object $rij): object => $this->steltKlantNaamSamen($rij)));
     }
 
     /**
      * Haal één bestelproduct op voor het wijzigformulier.
      */
-    private function haalBestelproductOp(int $productPerBestellingId): object|null
+    private function haalBestelproductOp(int $productPerBestellingId): ?object
     {
         if ($this->gebruiktStoredProcedures()) {
             return collect(DB::select('CALL sp_bestelproduct_ophalen(?)', [$productPerBestellingId]))->first();
         }
 
-        return DB::table('ProductPerBestelling as ppb')
+        $bestelproduct = DB::table('ProductPerBestelling as ppb')
             ->join('Bestelling as b', 'b.Id', '=', 'ppb.BestellingId')
             ->join('Klant as k', 'k.Id', '=', 'b.KlantId')
             ->join('Product as p', 'p.Id', '=', 'ppb.ProductId')
@@ -308,18 +341,20 @@ class BestellingController extends Controller
             ->where('ppb.IsActief', 1)
             ->where('b.IsActief', 1)
             ->limit(1)
-            ->selectRaw('b.Id AS BestellingId, b.BestelNummer, b.Bestelstatus, k.Id AS KlantId, k.Naam AS KlantNaam, ppb.Id AS ProductPerBestellingId, p.Naam AS ProductNaam, c.Naam AS CategorieNaam, p.Merk, ppb.UnitPrijs, ppb.Aantal')
+            ->selectRaw('b.Id AS BestellingId, b.BestelNummer, b.Bestelstatus, k.Voornaam, k.Tussenvoegsel, k.Achternaam, k.Relatienummer, ppb.Id AS ProductPerBestellingId, p.Naam AS ProductNaam, c.Naam AS CategorieNaam, p.Merk, ppb.UnitPrijs, ppb.Aantal')
             ->first();
 
         if ($bestelproduct !== null) {
-            $bestelproduct->Relatienummer = sprintf('KL-2026-%03d', $bestelproduct->KlantId);
+            $this->steltKlantNaamSamen($bestelproduct);
         }
 
         return $bestelproduct;
     }
 
     /**
-     * Wijzig het aantal van een bestelproduct via stored procedure of query fallback.
+     * Wijzig het aantal van een bestelproduct via stored procedure of query-fallback.
+     * De businessregel (Afgeleverd = niet wijzigbaar) zit in de stored procedure;
+     * de fallback spiegelt die regel voor de testomgeving.
      *
      * @return array{0: bool, 1: ?string}
      */
