@@ -23,6 +23,7 @@ class BestellingSeeder extends Seeder
         // Eerst legen in omgekeerde FK-volgorde zodat de seeder herhaalbaar is
         DB::table('ProductPerBestelling')->delete();
         DB::table('Bestelling')->delete();
+        DB::table('Voorraad')->delete();
         DB::table('Product')->delete();
         DB::table('Categorie')->delete();
         DB::table('Klant')->delete();
@@ -49,6 +50,7 @@ class BestellingSeeder extends Seeder
             ['Id' => 6, 'UserId' => 17, 'Voornaam' => 'Daan', 'Tussenvoegsel' => null, 'Achternaam' => 'Visser', 'Relatienummer' => 'KL-2026-006', 'Bijzonderheden' => 'Liefst einde middag.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
         ]);
 
+        // Categorieën, producten en voorraad komen 1-op-1 uit database/creatscript/createscript.sql
         DB::table('Categorie')->insert([
             ['Id' => 1, 'Naam' => 'Haarverzorging', 'Omschrijving' => 'Producten voor wassen en verzorgen.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
             ['Id' => 2, 'Naam' => 'Kleurproducten', 'Omschrijving' => 'Producten voor kleurbehandelingen.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
@@ -67,6 +69,19 @@ class BestellingSeeder extends Seeder
             ['Id' => 8, 'CategorieId' => 3, 'Naam' => 'Matte Styling Clay', 'Omschrijving' => 'Matte clay met flexibele hold.', 'Merk' => 'Tiko Style', 'EANcode' => '0871234500008', 'Houdbaarheidsdatum' => '2027-08-31', 'InkoopPrijs' => 4.95, 'VerkoopPrijs' => 12.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
             ['Id' => 9, 'CategorieId' => 3, 'Naam' => 'Strong Hold Gel', 'Omschrijving' => 'Sterke hold styling gel.', 'Merk' => 'Tiko Style', 'EANcode' => '0871234500009', 'Houdbaarheidsdatum' => '2027-03-31', 'InkoopPrijs' => 4.25, 'VerkoopPrijs' => 9.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
             ['Id' => 10, 'CategorieId' => 3, 'Naam' => 'Heat Protect Spray', 'Omschrijving' => 'Beschermende spray voor föhnen en stylen.', 'Merk' => 'Tiko Style', 'EANcode' => '0871234500010', 'Houdbaarheidsdatum' => '2027-11-30', 'InkoopPrijs' => 6.10, 'VerkoopPrijs' => 15.95, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+        ]);
+
+        DB::table('Voorraad')->insert([
+            ['Id' => 1, 'ProductId' => 1, 'AantalOpVoorraad' => 40, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 40, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 2, 'ProductId' => 2, 'AantalOpVoorraad' => 28, 'Aantaluitgegeven' => 2, 'Aantalbijgekomen' => 30, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 3, 'ProductId' => 3, 'AantalOpVoorraad' => 18, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 18, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 4, 'ProductId' => 4, 'AantalOpVoorraad' => 20, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 20, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 5, 'ProductId' => 5, 'AantalOpVoorraad' => 25, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 25, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 6, 'ProductId' => 6, 'AantalOpVoorraad' => 16, 'Aantaluitgegeven' => 1, 'Aantalbijgekomen' => 17, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 7, 'ProductId' => 7, 'AantalOpVoorraad' => 32, 'Aantaluitgegeven' => 3, 'Aantalbijgekomen' => 35, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 8, 'ProductId' => 8, 'AantalOpVoorraad' => 22, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 22, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 9, 'ProductId' => 9, 'AantalOpVoorraad' => 35, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 35, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 10, 'ProductId' => 10, 'AantalOpVoorraad' => 24, 'Aantaluitgegeven' => 1, 'Aantalbijgekomen' => 25, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
         ]);
 
         DB::table('Bestelling')->insert([

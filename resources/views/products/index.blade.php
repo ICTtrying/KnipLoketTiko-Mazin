@@ -1,0 +1,90 @@
+@extends('layouts.app')
+
+@section('title', 'Overzicht producten')
+
+@section('content')
+    {{-- Wireframe-02: breadcrumb Home / Producten --}}
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Producten</li>
+        </ol>
+    </nav>
+
+    <h1 class="h3 titel-kniploket mb-3">Overzicht producten</h1>
+
+    {{-- Wireframe-02/03: filterbalk in een whitecard boven de tabel --}}
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <form method="GET" action="{{ route('products.index') }}">
+                {{-- Wireframe-02: filter rechts uitgelijnd in de witte kaart --}}
+                <div class="d-flex align-items-end gap-2 flex-wrap justify-content-end">
+                    <div>
+                        <label for="categorie" class="form-label mb-1">Categorie selecteren</label>
+                        {{-- Client-side validatie: de select beperkt de invoer tot de geldige categorieën --}}
+                        <select id="categorie" name="categorie" class="form-select @error('categorie') is-invalid @enderror">
+                            <option value="" @selected($geselecteerdeCategorieId === null)>Alle categorieën</option>
+                            @foreach ($categorieen as $categorie)
+                                <option value="{{ $categorie->Id }}" @selected($geselecteerdeCategorieId === (int) $categorie->Id)>{{ $categorie->Naam }}</option>
+                            @endforeach
+                        </select>
+                        @error('categorie')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="btn btn-danger">Maak selectie</button>
+                    <a href="{{ route('products.index') }}" class="btn btn-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Wireframe-02: resultatenblok in een whitecard onder de filterbalk --}}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p class="text-muted small mb-2">Gevonden producten - {{ $producten->total() }} product(en)</p>
+
+            {{-- Wireframe-02: paginering onder de teksregel, boven de tabel (verborgen bij 0 resultaten) --}}
+            @if ($producten->total() > 0)
+                {{ $producten->links('pagination.kniploket') }}
+            @endif
+
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="tabel-header-kniploket">
+                        <tr>
+                            <th>Product</th>
+                            <th>Categorie</th>
+                            <th>Merk</th>
+                            <th>EAN-code</th>
+                            <th>Verkoopprijs</th>
+                            <th>Voorraad</th>
+                            <th>Actie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($producten as $product)
+                            <tr>
+                                <td>{{ $product->Naam }}</td>
+                                <td>{{ $product->CategorieNaam }}</td>
+                                <td>{{ $product->Merk }}</td>
+                                <td>{{ $product->EANcode }}</td>
+                                <td>EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
+                                <td>{{ $product->AantalOpVoorraad }}</td>
+                                <td>
+                                    {{-- Placeholder: detailpagina volgt in een latere user story --}}
+                                    <a href="#" class="btn btn-outline-primary btn-sm">Details</a>
+                                </td>
+                            </tr>
+                        @empty
+                            {{-- Wireframe-04: gecentreerde melding wanneer het filter geen producten oplevert --}}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">{{ $legeMelding }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+@endsection
