@@ -27,9 +27,7 @@ class BestellingController extends Controller
             $status = (string) $request->input('status', 'Alle statussen');
             Log::info('Bestellingen overzicht opgevraagd', ['status' => $status]);
 
-            $bestellingen = collect(DB::select('CALL sp_bestellingen_overzicht(?)', [
-                $status === 'Alle statussen' ? null : $status,
-            ]));
+            $bestellingen = $this->haalBestellingenOp($status);
 
             $paginator = $this->maakPaginatie($bestellingen, $request, 4);
 
@@ -81,7 +79,7 @@ class BestellingController extends Controller
             Log::info('Producten per bestelling opgevraagd', ['bestelling_id' => $id]);
 
             $bestelling = Bestelling::query()->findOrFail($id);
-            $producten = collect(DB::select('CALL sp_bestelling_producten_overzicht(?)', [$id]));
+            $producten = $this->haalProductenPerBestellingOp($id);
 
             return view('bestellingen.producten', [
                 'bestelling' => $bestelling,
@@ -145,7 +143,7 @@ class BestellingController extends Controller
             Log::info('Bestelproduct wijzig-formulier geopend', ['id' => $id]);
 
             $bestelling = Bestelling::query()->findOrFail($bestellingId);
-            $bestelproduct = collect(DB::select('CALL sp_bestelproduct_ophalen(?)', [$id]))->first();
+            $bestelproduct = $this->haalBestelproductOp($id);
 
             if ($bestelproduct === null) {
                 abort(404, 'Bestelproduct niet gevonden.');
@@ -181,16 +179,7 @@ class BestellingController extends Controller
                 'nieuw_aantal' => $gevalideerd['aantal'],
             ]);
 
-            DB::statement('SET @succes = 0');
-            DB::statement('SET @foutmelding = NULL');
-            DB::statement('CALL sp_bestelproduct_wijzigen(?, ?, @succes, @foutmelding)', [
-                $id,
-                $gevalideerd['aantal'],
-            ]);
-
-            $resultaat = DB::select('SELECT @succes AS succes, @foutmelding AS foutmelding');
-            $succes = (bool) ($resultaat[0]->succes ?? false);
-            $foutmelding = $resultaat[0]->foutmelding ?? null;
+            [$succes, $foutmelding] = $this->wijzigBestelproduct($id, (int) $gevalideerd['aantal']);
 
             if (! $succes) {
                 Log::warning('Wijzigen bestelproduct geweigerd door businessregel', [
@@ -233,5 +222,147 @@ class BestellingController extends Controller
             'path' => $request->url(),
             'query' => $request->query(),
         ]);
+    }
+
+    /**
+     * Controleer of de database stored procedures ondersteunt.
+     */
+    private function gebruiktStoredProcedures(): bool
+    {
+        return in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true);
+    }
+
+    /**
+     * Haal het bestellingenoverzicht op via stored procedure of query fallback.
+     */
+    private function haalBestellingenOp(string $status): Collection
+    {
+        if ($this->gebruiktStoredProcedures()) {
+            return collect(DB::select('CALL sp_bestellingen_overzicht(?)', [
+                $status === 'Alle statussen' ? null : $status,
+            ]));
+        }
+
+        return collect(DB::table('Bestelling as b')
+            ->join('Klant as k', 'k.Id', '=', 'b.KlantId')
+            ->leftJoin('ProductPerBestelling as ppb', function ($join): void {
+                $join->on('ppb.BestellingId', '=', 'b.Id')
+                    ->where('ppb.IsActief', '=', 1);
+            })
+            ->where('b.IsActief', 1)
+            ->when($status !== 'Alle statussen', fn ($query) => $query->where('b.Bestelstatus', $status))
+            ->groupBy('b.Id', 'b.BestelNummer', 'k.Naam', 'k.Id', 'b.Datum', 'b.Tijd', 'b.Bestelstatus')
+            ->orderByDesc('b.Datum')
+            ->orderByDesc('b.Tijd')
+            ->selectRaw('b.Id AS BestellingId, b.BestelNummer, k.Id AS KlantId, k.Naam AS KlantNaam, b.Datum, b.Tijd, b.Bestelstatus, COUNT(ppb.Id) AS AantalProducten, COALESCE(SUM(ppb.UnitPrijs * ppb.Aantal * (1 - ppb.Korting / 100) * (1 + ppb.BTWPercentage / 100)), 0) AS Totaal')
+            ->get()
+            ->map(function ($rij): object {
+                $rij->Relatienummer = sprintf('KL-2026-%03d', $rij->KlantId);
+
+                return $rij;
+            }));
+    }
+
+    /**
+     * Haal de productregels per bestelling op via stored procedure of query fallback.
+     */
+    private function haalProductenPerBestellingOp(int $bestellingId): Collection
+    {
+        if ($this->gebruiktStoredProcedures()) {
+            return collect(DB::select('CALL sp_bestelling_producten_overzicht(?)', [$bestellingId]));
+        }
+
+        return collect(DB::table('ProductPerBestelling as ppb')
+            ->join('Bestelling as b', 'b.Id', '=', 'ppb.BestellingId')
+            ->join('Klant as k', 'k.Id', '=', 'b.KlantId')
+            ->join('Product as p', 'p.Id', '=', 'ppb.ProductId')
+            ->join('Categorie as c', 'c.Id', '=', 'p.CategorieId')
+            ->where('ppb.IsActief', 1)
+            ->where('b.IsActief', 1)
+            ->where('b.Id', $bestellingId)
+            ->orderBy('p.Naam')
+            ->selectRaw('b.Id AS BestellingId, b.BestelNummer, b.Bestelstatus, k.Id AS KlantId, k.Naam AS KlantNaam, ppb.Id AS ProductPerBestellingId, p.Id AS ProductId, p.Naam AS ProductNaam, c.Naam AS CategorieNaam, p.Merk, ppb.Aantal, ppb.UnitPrijs, ppb.BTWPercentage, ppb.Korting, (ppb.UnitPrijs * ppb.Aantal * (1 - ppb.Korting / 100) * (1 + ppb.BTWPercentage / 100)) AS RegelTotaal')
+            ->get()
+            ->map(function ($rij): object {
+                $rij->Relatienummer = sprintf('KL-2026-%03d', $rij->KlantId);
+
+                return $rij;
+            }));
+    }
+
+    /**
+     * Haal één bestelproduct op voor het wijzigformulier.
+     */
+    private function haalBestelproductOp(int $productPerBestellingId): object|null
+    {
+        if ($this->gebruiktStoredProcedures()) {
+            return collect(DB::select('CALL sp_bestelproduct_ophalen(?)', [$productPerBestellingId]))->first();
+        }
+
+        return DB::table('ProductPerBestelling as ppb')
+            ->join('Bestelling as b', 'b.Id', '=', 'ppb.BestellingId')
+            ->join('Klant as k', 'k.Id', '=', 'b.KlantId')
+            ->join('Product as p', 'p.Id', '=', 'ppb.ProductId')
+            ->join('Categorie as c', 'c.Id', '=', 'p.CategorieId')
+            ->where('ppb.Id', $productPerBestellingId)
+            ->where('ppb.IsActief', 1)
+            ->where('b.IsActief', 1)
+            ->limit(1)
+            ->selectRaw('b.Id AS BestellingId, b.BestelNummer, b.Bestelstatus, k.Id AS KlantId, k.Naam AS KlantNaam, ppb.Id AS ProductPerBestellingId, p.Naam AS ProductNaam, c.Naam AS CategorieNaam, p.Merk, ppb.UnitPrijs, ppb.Aantal')
+            ->first();
+
+        if ($bestelproduct !== null) {
+            $bestelproduct->Relatienummer = sprintf('KL-2026-%03d', $bestelproduct->KlantId);
+        }
+
+        return $bestelproduct;
+    }
+
+    /**
+     * Wijzig het aantal van een bestelproduct via stored procedure of query fallback.
+     *
+     * @return array{0: bool, 1: ?string}
+     */
+    private function wijzigBestelproduct(int $productPerBestellingId, int $nieuwAantal): array
+    {
+        if ($this->gebruiktStoredProcedures()) {
+            DB::statement('SET @succes = 0');
+            DB::statement('SET @foutmelding = NULL');
+            DB::statement('CALL sp_bestelproduct_wijzigen(?, ?, @succes, @foutmelding)', [
+                $productPerBestellingId,
+                $nieuwAantal,
+            ]);
+
+            $resultaat = DB::select('SELECT @succes AS succes, @foutmelding AS foutmelding');
+
+            return [
+                (bool) ($resultaat[0]->succes ?? false),
+                $resultaat[0]->foutmelding ?? null,
+            ];
+        }
+
+        $bestelstatus = DB::table('ProductPerBestelling as ppb')
+            ->join('Bestelling as b', 'b.Id', '=', 'ppb.BestellingId')
+            ->where('ppb.Id', $productPerBestellingId)
+            ->where('ppb.IsActief', 1)
+            ->where('b.IsActief', 1)
+            ->value('b.Bestelstatus');
+
+        if ($bestelstatus === null) {
+            return [false, 'Bestelproduct niet gevonden'];
+        }
+
+        if ($bestelstatus === 'Afgeleverd') {
+            return [false, 'Aantal kan niet worden gewijzigd omdat de bestelling al is afgeleverd'];
+        }
+
+        DB::table('ProductPerBestelling')
+            ->where('Id', $productPerBestellingId)
+            ->update([
+                'Aantal' => $nieuwAantal,
+                'DatumGewijzigd' => now(),
+            ]);
+
+        return [true, null];
     }
 }
