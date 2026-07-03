@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 /**
  * Controller voor het beheren van producten.
@@ -22,23 +25,34 @@ class ProductController extends Controller
      */
     public function index(Request $request): View|RedirectResponse
     {
-        $gevalideerd = $request->validate([
-            'categorie' => ['nullable', 'integer', 'min:0'],
-        ], [
-            'categorie.integer' => 'De geselecteerde categorie is ongeldig.',
-            'categorie.min' => 'De geselecteerde categorie is ongeldig.',
-        ]);
+        try {
+            $gevalideerd = $request->validate([
+                'categorie' => ['nullable', 'integer', 'min:0'],
+            ], [
+                'categorie.integer' => 'De geselecteerde categorie is ongeldig.',
+                'categorie.min' => 'De geselecteerde categorie is ongeldig.',
+            ]);
 
-        $categorieId = isset($gevalideerd['categorie']) ? (int) $gevalideerd['categorie'] : null;
+            $categorieId = isset($gevalideerd['categorie']) ? (int) $gevalideerd['categorie'] : null;
+            Log::info('Productenoverzicht opgevraagd', ['categorie_id' => $categorieId]);
 
-        $producten = $this->haalProductenOp($categorieId);
-        $paginator = $this->maakPaginatie($producten, $request, 4);
+            $producten = $this->haalProductenOp($categorieId);
+            $paginator = $this->maakPaginatie($producten, $request, 4);
 
-        return view('products.index', [
-            'producten' => $paginator,
-            'categorieen' => $this->haalActieveCategorieenOp(),
-            'geselecteerdeCategorieId' => $categorieId,
-        ]);
+            return view('products.index', [
+                'producten' => $paginator,
+                'categorieen' => $this->haalActieveCategorieenOp(),
+                'geselecteerdeCategorieId' => $categorieId,
+            ]);
+        } catch (ValidationException $e) {
+            Log::warning('Validatiefout bij categorie-filter productenoverzicht', ['errors' => $e->errors()]);
+
+            return redirect()->route('products.index')->withErrors($e->errors());
+        } catch (Throwable $e) {
+            Log::error('Fout bij ophalen productenoverzicht', ['error' => $e->getMessage()]);
+
+            return back()->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van de producten.');
+        }
     }
 
     /**
