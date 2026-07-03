@@ -21,7 +21,7 @@
         <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
             <div class="overflow-x-auto">
                 <table class="w-full">
-                    <tbody>
+                    <tbody class="">
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Product</th>
                             <td class="px-4 py-3 text-sm">{{ $product->Naam }}</td>

@@ -54,7 +54,7 @@
 
         <div class="overflow-x-auto">
             <table class="w-full border-collapse">
-                <thead class="tabel-header-kniploket">
+                <thead class="tabel-header-kniploket text-white">
                     <tr>
                         <th class="px-4 py-2 text-left text-sm font-semibold">Soort</th>
                         <th class="px-4 py-2 text-left text-sm font-semibold">Omschrijving</th>

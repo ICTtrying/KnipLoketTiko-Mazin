@@ -39,7 +39,7 @@
                             'Accounts' => ['url' => '#', 'patroon' => 'accounts.*'],
                             'Medewerkers' => ['url' => '#', 'patroon' => 'medewerkers.*'],
                             'Beschikbaarheid' => ['url' => '#', 'patroon' => 'beschikbaarheid.*'],
-                            'Klanten' => ['url' => '#', 'patroon' => 'klanten.*'],
+                            'Klanten' => ['url' => route('klanten.index'), 'patroon' => 'klanten.*'],
                             'Afspraken' => ['url' => '#', 'patroon' => 'afspraken.*'],
                             'Behandelingen' => ['url' => route('behandelingen.index'), 'patroon' => 'behandelingen.*'],
                             'Producten' => ['url' => route('products.index'), 'patroon' => 'products.*'],

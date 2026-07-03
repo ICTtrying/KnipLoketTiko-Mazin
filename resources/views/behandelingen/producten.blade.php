@@ -24,7 +24,7 @@
     <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <div class="overflow-x-auto">
             <table class="w-full border-collapse">
-                <thead class="tabel-header-kniploket">
+                <thead class="tabel-header-kniploket text-white">
                     <tr>
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Product</th>
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Merk</th>
