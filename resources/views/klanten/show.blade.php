@@ -1,102 +1,87 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <div class="mb-6">
-        <a href="{{ route('klanten.index') }}" class="text-blue-500 hover:text-blue-700 text-sm">
-            ← Terug naar overzicht
-        </a>
-    </div>
+<div class="min-h-screen bg-gray-100 py-6">
+    <div class="container mx-auto px-6">
 
-    <div class="bg-white rounded shadow p-6">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">
-            Klant Detail
+        {{-- Breadcrumb --}}
+        <nav class="text-sm mb-2 font-medium">
+            <a href="{{ url('/') }}" class="text-red-600 hover:underline">Home</a>
+            <span class="text-gray-400 mx-2">/</span>
+            <a href="{{ route('klanten.index') }}" class="text-red-600 hover:underline">Klanten</a>
+            <span class="text-gray-400 mx-2">/</span>
+            <span class="text-gray-700">Detail</span>
+        </nav>
+
+        <h1 class="text-2xl font-bold mb-6 text-gray-900">
+            <span>Klantdetail</span>
+            <span class="text-gray-500 font-normal ml-2">— {{ $klant->Voornaam }} {{ $klant->Achternaam }}</span>
         </h1>
 
-        <div class="grid grid-cols-2 gap-6">
-            <!-- Persoonlijke gegevens -->
-            <div>
-                <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
-                    Persoonlijke gegevens
-                </h2>
-                <div class="space-y-3">
-                    <div>
-                        <label class="text-sm text-gray-600">Voornaam</label>
-                        <p class="text-gray-900">{{ $klant->Voornaam }}</p>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-600">Tussenvoegsel</label>
-                        <p class="text-gray-900">{{ $klant->Tussenvoegsel ?? '-' }}</p>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-600">Achternaam</label>
-                        <p class="text-gray-900">{{ $klant->Achternaam }}</p>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-600">Relatienummer</label>
-                        <p class="text-gray-900">{{ $klant->Relatienummer }}</p>
-                    </div>
-                </div>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 max-w-3xl overflow-hidden">
+            <table class="w-full text-sm text-left">
+                <tbody class="divide-y divide-gray-200">
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50 w-48">Naam</td>
+                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Voornaam }} {{ $klant->Tussenvoegsel }} {{ $klant->Achternaam }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Relatienummer</td>
+                        <td class="px-6 py-3.5 text-gray-900 font-mono text-xs tracking-wider">{{ $klant->Relatienummer }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Contact e-mail</td>
+                        <td class="px-6 py-3.5 text-gray-900 font-medium text-red-700">{{ $klant->ContactEmail }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Account e-mail</td>
+                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->AccountEmail ?? '-' }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Straatnaam</td>
+                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Straatnaam }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Huisnummer</td>
+                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Huisnummer }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Toevoeging</td>
+                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Toevoeging ?? '-' }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Postcode</td>
+                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Postcode }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Plaats</td>
+                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Plaats }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Mobiel</td>
+                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Mobiel }}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Bijzonderheden</td>
+                        <td class="px-6 py-3.5 text-gray-900 whitespace-pre-line">{{ $klant->Bijzonderheden ?? '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+                <a href="{{ route('klanten.edit', $klant->Id) }}"
+                   class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-6 rounded transition shadow-sm">
+                    Wijzigen
+                </a>
+                <a href="{{ route('klanten.index') }}"
+                   class="bg-gray-500 hover:bg-gray-600 text-white text-sm font-semibold py-2 px-6 rounded transition shadow-sm">
+                    Terug
+                </a>
             </div>
-
-            <!-- Contactgegevens -->
-            <div>
-                <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
-                    Contactgegevens
-                </h2>
-                <div class="space-y-3">
-                    <div>
-                        <label class="text-sm text-gray-600">E-mail</label>
-                        <p class="text-gray-900">{{ $klant->ContactEmail }}</p>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-600">Mobiel</label>
-                        <p class="text-gray-900">{{ $klant->Mobiel }}</p>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-600">Adres</label>
-                        <p class="text-gray-900">
-                            {{ $klant->Straatnaam }} {{ $klant->Huisnummer }}
-                            @if ($klant->Toevoeging)
-                                {{ $klant->Toevoeging }}
-                            @endif
-                        </p>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-600">Postcode</label>
-                        <p class="text-gray-900">{{ $klant->Postcode }}</p>
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-600">Plaats</label>
-                        <p class="text-gray-900">{{ $klant->Plaats }}</p>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- Extra info -->
-        <div class="mt-6">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
-                Bijzonderheden
-            </h2>
-            <p class="text-gray-900">{{ $klant->Bijzonderheden ?? '-' }}</p>
-        </div>
-
-        <!-- Action buttons -->
-        <div class="mt-8 flex gap-3">
-            <a 
-                href="{{ route('klanten.edit', $klant->Id) }}" 
-                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition"
-            >
-                Wijzig
-            </a>
-            <a 
-                href="{{ route('klanten.index') }}" 
-                class="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded transition"
-            >
-                Annuleer
-            </a>
-        </div>
+        {{-- Footer --}}
+        <p class="text-center text-xs text-gray-400 mt-10">© 2026 Kniploket Tiko - Alle rechten voorbehouden</p>
     </div>
 </div>
 @endsection

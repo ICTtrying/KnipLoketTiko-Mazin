@@ -1,142 +1,121 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <div class="mb-6">
-        <a href="{{ route('klanten.index') }}" class="text-blue-500 hover:text-blue-700 text-sm">
-            ← Terug naar overzicht
-        </a>
-    </div>
+<div class="min-h-screen bg-gray-100 py-6">
+    <div class="container mx-auto px-6">
 
-    <div class="bg-white rounded shadow p-6 max-w-2xl">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">
-            Klant wijzigen
-        </h1>
-
-        <!-- Error messages -->
-        @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded mb-4">
-                <p class="font-semibold mb-2">Klantgegevens zijn niet bijgewerkt</p>
-                <ul class="list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li class="text-sm">{{ $error }}</li>
-                    @endforeach
-                </ul>
+        {{-- Wireframe-05: success flash, verdwijnt na 3 seconden --}}
+        @if (session('success'))
+            <div id="flash-success" class="bg-green-100 border border-green-300 text-green-800 text-sm px-4 py-3 rounded mb-4 shadow-sm transition-all duration-300">
+                {{ session('success') }}
             </div>
         @endif
 
-        <form action="{{ route('klanten.update', $klant->Id) }}" method="POST">
-            @csrf
-            @method('PUT')
+        {{-- Breadcrumb --}}
+        <nav class="text-sm mb-2 font-medium">
+            <a href="{{ url('/') }}" class="text-red-600 hover:underline">Home</a>
+            <span class="text-gray-400 mx-2">/</span>
+            <span class="text-gray-700">Klanten</span>
+        </nav>
 
-            <!-- Hidden contact ID -->
-            <input type="hidden" name="contact_id" value="{{ $klant->ContactId }}">
+        <h1 class="text-2xl font-bold text-red-700 mb-6">Overzicht klanten</h1>
 
-            <!-- Read-only fields -->
-            <div class="grid grid-cols-2 gap-6 mb-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Voornaam
-                    </label>
-                    <input 
-                        type="text" 
-                        value="{{ $klant->Voornaam }}"
-                        readonly
-                        class="w-full px-3 py-2 border border-gray-300 rounded bg-gray-100 text-gray-600"
+        {{-- Zoekbalk --}}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+            <form method="GET" action="{{ route('klanten.index') }}" class="flex flex-col sm:flex-row items-start sm:items-end justify-end gap-3">
+                <div class="w-full sm:w-auto">
+                    <label for="postcode" class="block text-sm font-semibold text-gray-700 mb-1">Postcode zoeken</label>
+                    <input
+                        type="text"
+                        id="postcode"
+                        name="postcode"
+                        value="{{ $postcode ?? '' }}"
+                        placeholder="Bijv. 3512AB"
+                        class="w-full sm:w-52 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
                     />
                 </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Achternaam
-                    </label>
-                    <input 
-                        type="text" 
-                        value="{{ $klant->Achternaam }}"
-                        readonly
-                        class="w-full px-3 py-2 border border-gray-300 rounded bg-gray-100 text-gray-600"
-                    />
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button type="submit"
+                        class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-5 rounded transition shadow-sm">
+                        Toon klanten
+                    </button>
+                    <a href="{{ route('klanten.index') }}"
+                        class="flex-1 sm:flex-none bg-gray-500 hover:bg-gray-600 text-white text-sm font-semibold py-2 px-5 rounded transition shadow-sm text-center">
+                        Reset
+                    </a>
                 </div>
-            </div>
+            </form>
+        </div>
 
-            <!-- Editable field -->
-            <div class="mb-6">
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                    Contact e-mailadres
-                </label>
-                <input 
-                    type="email"
-                    id="email"
-                    name="email"
-                    value="{{ old('email', $klant->ContactEmail) }}"
-                    class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error('email') border-red-500 @enderror"
-                    placeholder="Voer e-mailadres in"
-                    required
-                />
-                @error('email')
-                    <span class="text-red-600 text-sm mt-1 block">
-                        Het e-mailadres is al in gebruik
-                    </span>
-                @enderror
-            </div>
+        {{-- Resultatenkaart --}}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            @if(empty($klanten))
+                <div class="px-6 py-8 text-center text-sm text-gray-600 font-medium">
+                    Er zijn geen klanten bekent die de geselecteerde postcode hebben
+                </div>
+            @else
+                {{-- Gevonden klanten + paginering --}}
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 gap-3">
+                    <span class="text-sm font-medium text-gray-600">Gevonden klanten - {{ count($klanten) }} klant(en)</span>
+                    <div class="flex items-center gap-1 text-sm self-center">
+                        <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full text-gray-400 bg-white cursor-not-allowed" disabled>‹</button>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-full bg-red-600 text-white font-semibold">1</button>
+                        <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full text-gray-600 bg-white hover:bg-gray-100 transition">2</button>
+                        <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full text-gray-400 bg-white cursor-not-allowed" disabled>›</button>
+                    </div>
+                </div>
 
-            <!-- Additional info (read-only) -->
-            <div class="mb-6 p-4 bg-gray-50 rounded">
-                <h3 class="text-sm font-medium text-gray-700 mb-3">Contact adres</h3>
-                <p class="text-sm text-gray-600">
-                    {{ $klant->Straatnaam }} {{ $klant->Huisnummer }}
-                    @if ($klant->Toevoeging)
-                        {{ $klant->Toevoeging }}
-                    @endif
-                    <br>
-                    {{ $klant->Postcode }} {{ $klant->Plaats }}
-                </p>
-                <p class="text-sm text-gray-600 mt-2">
-                    <strong>Mobiel:</strong> {{ $klant->Mobiel }}
-                </p>
-            </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left whitespace-nowrap">
+                        <thead class="bg-red-600 text-white uppercase text-xs tracking-wider">
+                            <tr>
+                                <th class="px-6 py-3 font-semibold">Naam</th>
+                                <th class="px-6 py-3 font-semibold">Relatienummer</th>
+                                <th class="px-6 py-3 font-semibold">Adres</th>
+                                <th class="px-6 py-3 font-semibold">Postcode</th>
+                                <th class="px-6 py-3 font-semibold">Woonplaats</th>
+                                <th class="px-6 py-3 font-semibold">Mobiel</th>
+                                <th class="px-6 py-3 font-semibold">Contact e-mail</th>
+                                <th class="px-6 py-3 font-semibold text-center">Actie</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @foreach ($klanten as $klant)
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-medium text-gray-900">{{ $klant->Voornaam }} {{ $klant->Achternaam }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ $klant->Relatienummer }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ $klant->Straatnaam }} {{ $klant->Huisnummer }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ $klant->Postcode }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ $klant->Plaats }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ $klant->Mobiel }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ $klant->ContactEmail }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="{{ route('klanten.show', $klant->Id) }}"
+                                       class="inline-block border border-blue-500 text-blue-600 text-xs font-semibold px-4 py-1.5 rounded hover:bg-blue-50 transition shadow-sm">
+                                        Details
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
 
-            <!-- Action buttons -->
-            <div class="flex gap-3">
-                <button 
-                    type="submit"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded transition"
-                >
-                    Opslaan
-                </button>
-                <a 
-                    href="{{ route('klanten.show', $klant->Id) }}"
-                    class="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-6 rounded transition"
-                >
-                    Annuleer
-                </a>
-            </div>
-        </form>
+        {{-- Footer --}}
+        <p class="text-center text-xs text-gray-400 mt-10">© 2026 Kniploket Tiko - Alle rechten voorbehouden</p>
     </div>
 </div>
 
-<!-- Client-side validation -->
 <script>
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const emailInput = document.getElementById('email');
-        const email = emailInput.value.trim();
-
-        // Simple email format check
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
-        if (!email) {
-            e.preventDefault();
-            alert('E-mailadres is verplicht');
-            return false;
-        }
-
-        if (!emailRegex.test(email)) {
-            e.preventDefault();
-            alert('Voer een geldig e-mailadres in');
-            return false;
-        }
-
-        return true;
-    });
+    // Wireframe-05: flash verdwijnt na 3 seconden
+    const flash = document.getElementById('flash-success');
+    if (flash) {
+        setTimeout(() => {
+            flash.style.opacity = '0';
+            setTimeout(() => flash.remove(), 300);
+        }, 3000);
+    }
 </script>
 @endsection
