@@ -29,7 +29,8 @@ BEGIN
         SET p_foutmelding = 'Bestelproduct niet gevonden';
     ELSEIF v_bestelstatus = 'Afgeleverd' THEN
         SET p_succes = 0;
-        SET p_foutmelding = 'Aantal kan niet worden gewijzigd omdat de bestelling al is afgeleverd';
+        -- Exacte meldingtekst uit wireframe-10, inclusief punt aan het einde
+        SET p_foutmelding = 'Aantal kan niet worden gewijzigd omdat de bestelling al is afgeleverd.';
     ELSE
         UPDATE ProductPerBestelling
         SET Aantal = p_nieuw_aantal,

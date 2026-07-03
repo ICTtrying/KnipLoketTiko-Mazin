@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BehandelingController;
 use App\Http\Controllers\BestellingController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
@@ -14,6 +15,13 @@ Route::prefix('behandelingen')->group(function () {
     Route::get('/producten/{product}/details', [BehandelingController::class, 'productDetail'])->name('behandelingen.product.detail');
     Route::get('/producten/{product}/wijzigen', [BehandelingController::class, 'wijzigForm'])->name('behandelingen.product.wijzigen');
     Route::put('/producten/{product}/wijzigen', [BehandelingController::class, 'wijzigOpslaan'])->name('behandelingen.product.opslaan');
+});
+// Routes voor het productenoverzicht (User Story 07) en productdetail/wijzigen (User Story 08)
+Route::prefix('producten')->name('products.')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('index');
+    Route::get('/{id}', [ProductController::class, 'show'])->name('show');
+    Route::get('/{id}/wijzigen', [ProductController::class, 'edit'])->name('edit');
+    Route::put('/{id}/wijzigen', [ProductController::class, 'update'])->name('update');
 });
 
 Route::prefix('bestellingen')->name('bestellingen.')->group(function () {

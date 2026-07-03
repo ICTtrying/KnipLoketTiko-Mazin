@@ -23,6 +23,9 @@ class BestellingSeeder extends Seeder
         // Eerst legen in omgekeerde FK-volgorde zodat de seeder herhaalbaar is
         DB::table('ProductPerBestelling')->delete();
         DB::table('Bestelling')->delete();
+        DB::table('LeverancierOrder')->delete();
+        DB::table('Leverancier')->delete();
+        DB::table('Voorraad')->delete();
         DB::table('Product')->delete();
         DB::table('Categorie')->delete();
         DB::table('Klant')->delete();
@@ -49,6 +52,7 @@ class BestellingSeeder extends Seeder
             ['Id' => 6, 'UserId' => 17, 'Voornaam' => 'Daan', 'Tussenvoegsel' => null, 'Achternaam' => 'Visser', 'Relatienummer' => 'KL-2026-006', 'Bijzonderheden' => 'Liefst einde middag.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
         ]);
 
+        // Categorieën, producten en voorraad komen 1-op-1 uit database/creatscript/createscript.sql
         DB::table('Categorie')->insert([
             ['Id' => 1, 'Naam' => 'Haarverzorging', 'Omschrijving' => 'Producten voor wassen en verzorgen.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
             ['Id' => 2, 'Naam' => 'Kleurproducten', 'Omschrijving' => 'Producten voor kleurbehandelingen.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
@@ -67,6 +71,40 @@ class BestellingSeeder extends Seeder
             ['Id' => 8, 'CategorieId' => 3, 'Naam' => 'Matte Styling Clay', 'Omschrijving' => 'Matte clay met flexibele hold.', 'Merk' => 'Tiko Style', 'EANcode' => '0871234500008', 'Houdbaarheidsdatum' => '2027-08-31', 'InkoopPrijs' => 4.95, 'VerkoopPrijs' => 12.95, 'IsActief' => 1, 'Opmerking' => 'Populair bij korte kapsels met matte finish.', 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
             ['Id' => 9, 'CategorieId' => 3, 'Naam' => 'Strong Hold Gel', 'Omschrijving' => 'Sterke hold styling gel.', 'Merk' => 'Tiko Style', 'EANcode' => '0871234500009', 'Houdbaarheidsdatum' => '2027-03-31', 'InkoopPrijs' => 4.25, 'VerkoopPrijs' => 9.95, 'IsActief' => 1, 'Opmerking' => 'Sterke hold, zuinig doseren.', 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
             ['Id' => 10, 'CategorieId' => 3, 'Naam' => 'Heat Protect Spray', 'Omschrijving' => 'Beschermende spray voor föhnen en stylen.', 'Merk' => 'Tiko Style', 'EANcode' => '0871234500010', 'Houdbaarheidsdatum' => '2027-11-30', 'InkoopPrijs' => 6.10, 'VerkoopPrijs' => 15.95, 'IsActief' => 1, 'Opmerking' => 'Aanbrengen op handdoekdroog haar.', 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+        ]);
+
+        DB::table('Voorraad')->insert([
+            ['Id' => 1, 'ProductId' => 1, 'AantalOpVoorraad' => 40, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 40, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 2, 'ProductId' => 2, 'AantalOpVoorraad' => 28, 'Aantaluitgegeven' => 2, 'Aantalbijgekomen' => 30, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 3, 'ProductId' => 3, 'AantalOpVoorraad' => 18, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 18, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 4, 'ProductId' => 4, 'AantalOpVoorraad' => 20, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 20, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 5, 'ProductId' => 5, 'AantalOpVoorraad' => 25, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 25, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 6, 'ProductId' => 6, 'AantalOpVoorraad' => 16, 'Aantaluitgegeven' => 1, 'Aantalbijgekomen' => 17, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 7, 'ProductId' => 7, 'AantalOpVoorraad' => 32, 'Aantaluitgegeven' => 3, 'Aantalbijgekomen' => 35, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 8, 'ProductId' => 8, 'AantalOpVoorraad' => 22, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 22, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 9, 'ProductId' => 9, 'AantalOpVoorraad' => 35, 'Aantaluitgegeven' => 0, 'Aantalbijgekomen' => 35, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 10, 'ProductId' => 10, 'AantalOpVoorraad' => 24, 'Aantaluitgegeven' => 1, 'Aantalbijgekomen' => 25, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+        ]);
+
+        DB::table('Leverancier')->insert([
+            ['Id' => 1, 'Naam' => 'Van Duuren Haircosmetics', 'Straatnaam' => 'Prinses Irenestraat', 'Huisnummer' => 12, 'Toevoeging' => 'A', 'Postcode' => '3584AN', 'Plaats' => 'Utrecht', 'Email' => 'inkoop@vanduurenhaircosmetics.nl', 'Mobiel' => '+31 623456121', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 2, 'Naam' => 'ColorPro Benelux', 'Straatnaam' => 'Gibraltarstraat', 'Huisnummer' => 234, 'Toevoeging' => null, 'Postcode' => '5611AA', 'Plaats' => 'Eindhoven', 'Email' => 'orders@colorpro-benelux.nl', 'Mobiel' => '+31 623456122', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 3, 'Naam' => 'SalonStyle Supplies', 'Straatnaam' => 'Der Kinderenstraat', 'Huisnummer' => 456, 'Toevoeging' => 'Bis', 'Postcode' => '3011AB', 'Plaats' => 'Rotterdam', 'Email' => 'service@salonstylesupplies.nl', 'Mobiel' => '+31 623456123', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 4, 'Naam' => 'BarberCare Nederland', 'Straatnaam' => 'Nachtegaalstraat', 'Huisnummer' => 233, 'Toevoeging' => 'A', 'Postcode' => '4811AA', 'Plaats' => 'Breda', 'Email' => 'bestellingen@barbercare-nederland.nl', 'Mobiel' => '+31 623456124', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 5, 'Naam' => 'HairTools Groothandel', 'Straatnaam' => 'Bertram Russellstraat', 'Huisnummer' => 45, 'Toevoeging' => null, 'Postcode' => '8011AB', 'Plaats' => 'Zwolle', 'Email' => 'contact@hairtools-groothandel.nl', 'Mobiel' => '+31 623456125', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+        ]);
+
+        DB::table('LeverancierOrder')->insert([
+            ['Id' => 1, 'Ordernummer' => 'ORD-2026-1001', 'ProductId' => 1, 'LeverancierId' => 1, 'Aantal' => 12, 'Orderdatum' => '2026-05-04', 'Leverdatum' => null, 'Leverstatus' => 'Inbehandeling', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 2, 'Ordernummer' => 'ORD-2026-1002', 'ProductId' => 5, 'LeverancierId' => 2, 'Aantal' => 8, 'Orderdatum' => '2026-05-05', 'Leverdatum' => null, 'Leverstatus' => 'Inbehandeling', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 3, 'Ordernummer' => 'ORD-2026-1003', 'ProductId' => 9, 'LeverancierId' => 3, 'Aantal' => 10, 'Orderdatum' => '2026-05-06', 'Leverdatum' => '2026-05-08', 'Leverstatus' => 'Geleverd', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 4, 'Ordernummer' => 'ORD-2026-1004', 'ProductId' => 7, 'LeverancierId' => 2, 'Aantal' => 6, 'Orderdatum' => '2026-05-07', 'Leverdatum' => null, 'Leverstatus' => 'Nietleverbaar', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 5, 'Ordernummer' => 'ORD-2026-1005', 'ProductId' => 10, 'LeverancierId' => 4, 'Aantal' => 9, 'Orderdatum' => '2026-05-08', 'Leverdatum' => null, 'Leverstatus' => 'Inbehandeling', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 6, 'Ordernummer' => 'ORD-2026-1006', 'ProductId' => 2, 'LeverancierId' => 1, 'Aantal' => 7, 'Orderdatum' => '2026-05-09', 'Leverdatum' => null, 'Leverstatus' => 'Inbehandeling', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 7, 'Ordernummer' => 'ORD-2026-1007', 'ProductId' => 3, 'LeverancierId' => 1, 'Aantal' => 6, 'Orderdatum' => '2026-05-10', 'Leverdatum' => null, 'Leverstatus' => 'Inbehandeling', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 8, 'Ordernummer' => 'ORD-2026-1008', 'ProductId' => 4, 'LeverancierId' => 4, 'Aantal' => 5, 'Orderdatum' => '2026-05-10', 'Leverdatum' => null, 'Leverstatus' => 'Inbehandeling', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 9, 'Ordernummer' => 'ORD-2026-1009', 'ProductId' => 6, 'LeverancierId' => 2, 'Aantal' => 6, 'Orderdatum' => '2026-05-11', 'Leverdatum' => null, 'Leverstatus' => 'Inbehandeling', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 10, 'Ordernummer' => 'ORD-2026-1010', 'ProductId' => 8, 'LeverancierId' => 3, 'Aantal' => 8, 'Orderdatum' => '2026-05-11', 'Leverdatum' => null, 'Leverstatus' => 'Inbehandeling', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
         ]);
 
         DB::table('Bestelling')->insert([
