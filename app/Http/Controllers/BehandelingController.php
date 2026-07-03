@@ -32,8 +32,12 @@ class BehandelingController extends Controller
 
             // Beschikbare opties voor de statusfilter in de view
             $statusLabels = [
-                '1' => 'Actief',
-                '0' => 'Inactief'
+                'Knipppen',
+                'Combi behandelingen',
+                'Kleuren',
+                'Permanent',
+                'Extensions',
+                'Overig'
             ];
 
             $behandelingen = $this->haalBehandelingenOp($status);
