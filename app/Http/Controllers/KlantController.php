@@ -15,7 +15,7 @@ class KlantController extends Controller
      */
     public function index(Request $request)
     {
-        try {
+        try { 
             // Get postcode filter from request
             $postcode = $request->input('postcode', null);
 
@@ -45,6 +45,7 @@ class KlantController extends Controller
                     'Mobiel' => $contact?->Mobiel ?? '-',
                     'ContactEmail' => $contact?->ContactEmail ?? '-',
                 ];
+                
             });
 
             // Check if results are empty
