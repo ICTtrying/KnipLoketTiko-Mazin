@@ -42,6 +42,23 @@
                 font-size: .75rem;
             }
 
+            /* Gebruikersnaam in de navbar: eigen, unieke class (bewust los van de
+               Bootstrap-buttonclasses zodat styling nooit op knoppen elders kan lekken).
+               Grijze tekst, transparante achtergrond (wireframe toont geen vlak), breekt nooit. */
+            .navbar-kniploket .navbar-gebruikersbadge {
+                color: #d0d0d0;
+                background-color: transparent;
+                white-space: nowrap;
+            }
+
+            /* Actieve navbar-link: paarsachtige chip, exact bemonsterd uit de
+               wireframe-screenshots (#9D2B5F achter "Bestellingen") */
+            .navbar-kniploket .nav-link.nav-link-actief {
+                background-color: #9d2b5f;
+                color: #fff;
+                border-radius: .25rem;
+            }
+
             /* Kniploket Tiko-huisstijl: rode titels en breadcrumb-links */
             .titel-kniploket {
                 color: #c8102e;
@@ -87,18 +104,28 @@
             <div class="container d-flex justify-content-between align-items-center flex-nowrap">
                 <a class="navbar-brand text-uppercase" href="{{ route('home') }}">Kniploket Tiko</a>
                 <div class="d-flex align-items-center flex-nowrap">
+                    @php
+                        /** @var array<string, array{url: string, patroon: string}> $navigatieLinks Navigatielinks met routepatroon voor actieve-linkdetectie; modules zonder routes matchen nooit en zijn dus nooit actief */
+                        $navigatieLinks = [
+                            'Accounts' => ['url' => '#', 'patroon' => 'accounts.*'],
+                            'Medewerkers' => ['url' => '#', 'patroon' => 'medewerkers.*'],
+                            'Beschikbaarheid' => ['url' => '#', 'patroon' => 'beschikbaarheid.*'],
+                            'Klanten' => ['url' => '#', 'patroon' => 'klanten.*'],
+                            'Afspraken' => ['url' => '#', 'patroon' => 'afspraken.*'],
+                            'Behandelingen' => ['url' => '#', 'patroon' => 'behandelingen.*'],
+                            'Producten' => ['url' => '#', 'patroon' => 'producten.*'],
+                            'Bestellingen' => ['url' => route('bestellingen.index'), 'patroon' => 'bestellingen.*'],
+                        ];
+                    @endphp
                     <ul class="navbar-nav d-flex flex-row flex-nowrap align-items-center mb-0 me-3 navbar-links-kniploket">
-                        <li class="nav-item"><a class="nav-link" href="#">Accounts</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Medewerkers</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Beschikbaarheid</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Klanten</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Afspraken</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Behandelingen</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Producten</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('bestellingen.index') }}">Bestellingen</a></li>
+                        @foreach ($navigatieLinks as $linkLabel => $navigatieLink)
+                            <li class="nav-item">
+                                <a @class(['nav-link', 'nav-link-actief' => request()->routeIs($navigatieLink['patroon'])]) href="{{ $navigatieLink['url'] }}">{{ $linkLabel }}</a>
+                            </li>
+                        @endforeach
                     </ul>
-                    {{-- text-nowrap: deze tekst mag nooit over twee regels breken (wireframe-01) --}}
-                    <span class="navbar-text text-white text-nowrap me-2">Salon Eigenaar (eigenaar)</span>
+                    {{-- Gebruikersnaam: grijze platte tekst zonder achtergrondvlak, eigen scoped class --}}
+                    <span class="navbar-text navbar-gebruikersbadge me-2">Salon Eigenaar (eigenaar)</span>
                     <a href="#" class="btn btn-outline-light btn-sm text-nowrap">Uitloggen</a>
                 </div>
             </div>

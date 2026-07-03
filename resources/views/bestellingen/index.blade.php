@@ -44,7 +44,9 @@
             {{ $bestellingen->links('pagination.kniploket') }}
 
             <div class="table-responsive">
-                <table class="table align-middle mb-0">
+                {{-- table-hover: lichtgrijze rij-achtergrond bij hover, alleen op tbody-rijen (wireframe-03);
+                     Bootstraps hover-tint (rgba(0,0,0,.075) op wit) is exact de wireframe-kleur #ECECEC --}}
+                <table class="table table-hover align-middle mb-0">
                     <thead class="tabel-header-kniploket">
                         <tr>
                             <th>Bestelnr.</th>
