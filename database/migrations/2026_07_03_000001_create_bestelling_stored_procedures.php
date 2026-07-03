@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Migration die alle stored procedures voor de Bestelling-module registreert.
+ *
+ * De DELIMITER-regels in de SQL-bestanden zijn bedoeld voor handmatige uitvoering
+ * in bijv. phpMyAdmin/Workbench en worden hier verwijderd, omdat de server die
+ * client-directive niet kent.
  */
 return new class extends Migration
 {
@@ -25,8 +29,14 @@ return new class extends Migration
             $procedureNaam = pathinfo($bestand, PATHINFO_FILENAME);
             $pad = database_path('sql/procedures/'.$bestand);
 
+            $sql = file_get_contents($pad);
+
+            // Verwijder de DELIMITER-directives en de $$-scheidingstekens voor uitvoering via PDO
+            $sql = preg_replace('/^\s*DELIMITER.*$/mi', '', $sql);
+            $sql = str_replace('$$', '', $sql);
+
             DB::unprepared('DROP PROCEDURE IF EXISTS '.$procedureNaam);
-            DB::unprepared(file_get_contents($pad));
+            DB::unprepared($sql);
         }
     }
 
