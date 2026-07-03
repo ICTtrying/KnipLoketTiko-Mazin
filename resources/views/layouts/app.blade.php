@@ -42,7 +42,7 @@
                             'Klanten' => ['url' => '#', 'patroon' => 'klanten.*'],
                             'Afspraken' => ['url' => '#', 'patroon' => 'afspraken.*'],
                             'Behandelingen' => ['url' => '#', 'patroon' => 'behandelingen.*'],
-                            'Producten' => ['url' => '#', 'patroon' => 'producten.*'],
+                            'Producten' => ['url' => route('products.index'), 'patroon' => 'products.*'],
                             'Bestellingen' => ['url' => route('bestellingen.index'), 'patroon' => 'bestellingen.*'],
                         ];
                     @endphp
