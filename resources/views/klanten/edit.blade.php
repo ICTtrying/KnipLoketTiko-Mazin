@@ -1,193 +1,197 @@
 @extends('layouts.app')
 
+@section('title', 'Klant wijzigen')
+
 @section('content')
-<div class="min-h-screen bg-gray-100 py-6">
-    <div class="container mx-auto px-6">
+    {{-- Foutmelding voor ontbrekende ContactId (Debug) --}}
+    @if(!isset($klant->ContactId))
+        <div class="alert alert-warning shadow-sm mb-3">
+            <strong>Let op:</strong> De <code>ContactId</code> ontbreekt in de data. De database zal niets updaten. Controleer je <code>sp_get_klant_by_id</code> stored procedure!
+        </div>
+    @endif
 
-        {{-- Wireframe-06: foutmelding bovenaan pagina buiten de kaart --}}
-        @if ($errors->any())
-            <div class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded mb-4 shadow-sm">
-                Klantgegevens zijn niet bijgewerkt.
-            </div>
-        @endif
+    {{-- Wireframe-06: foutmelding bovenaan pagina als strakke balk --}}
+    @if ($errors->any() || session('error'))
+        <div class="alert alert-danger shadow-sm mb-3">
+            {{ session('error') ?? 'Klantgegevens zijn niet bijgewerkt.' }}
+        </div>
+    @endif
 
-        {{-- Breadcrumb --}}
-        <nav class="text-sm mb-2 font-medium">
-            <a href="{{ url('/') }}" class="text-red-600 hover:underline">Home</a>
-            <span class="text-gray-400 mx-2">/</span>
-            <a href="{{ route('klanten.index') }}" class="text-red-600 hover:underline">Klanten</a>
-            <span class="text-gray-400 mx-2">/</span>
-            <span class="text-gray-700">Wijzigen</span>
-        </nav>
+    {{-- Breadcrumb --}}
+    <nav aria-label="breadcrumb" class="mb-2">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('klanten.index') }}">Klanten</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Wijzigen</li>
+        </ol>
+    </nav>
 
-        <h1 class="text-2xl font-bold mb-4">
-            <span class="text-red-700">Klant wijzigen</span>
-            <span class="text-gray-500 font-normal ml-2">— {{ $klant->Voornaam }} {{ $klant->Achternaam }}</span>
-        </h1>
+    <h1 class="h3 titel-kniploket mb-3">
+        <span>Klant wijzigen</span>
+        <span class="text-muted ms-2" style="font-weight: normal;">{{ $klant->Voornaam }} {{ $klant->Achternaam }}</span>
+    </h1>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-3xl">
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
             <form action="{{ route('klanten.update', $klant->Id) }}" method="POST">
                 @csrf
                 @method('PUT')
-                <input type="hidden" name="contact_id" value="{{ $klant->ContactId }}">
+                
+                {{-- Fallback: als ContactId mist, probeer Id (voor het geval je de query anders hebt opgebouwd) --}}
+                <input type="hidden" name="contact_id" value="{{ $klant->ContactId ?? $klant->Id }}">
 
-                {{-- Rij 1: Naam | Relatienummer --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Naam <span class="text-red-600">*</span>
-                        </label>
-                        <input type="text"
-                            value="{{ $klant->Voornaam }} {{ $klant->Tussenvoegsel }} {{ $klant->Achternaam }}"
-                            readonly
-                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none" />
+                <div class="row g-3 mb-3">
+                    
+                    {{-- BEWERKBAAR: Naam --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Naam <span class="text-danger">*</span></label>
+                        <div class="row g-2">
+                            <div class="col-5">
+                                <input type="text" name="voornaam" value="{{ old('voornaam', $klant->Voornaam) }}" class="form-control" placeholder="Voornaam" required>
+                            </div>
+                            <div class="col-3">
+                                <input type="text" name="tussenvoegsel" value="{{ old('tussenvoegsel', $klant->Tussenvoegsel) }}" class="form-control" placeholder="Tussenv.">
+                            </div>
+                            <div class="col-4">
+                                <input type="text" name="achternaam" value="{{ old('achternaam', $klant->Achternaam) }}" class="form-control" placeholder="Achternaam" required>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Relatienummer</label>
+
+                    {{-- NIET BEWERKBAAR: Relatienummer --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Relatienummer</label>
                         <input type="text"
                             value="{{ $klant->Relatienummer }}"
                             readonly
-                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none font-mono" />
+                            class="form-control bg-light text-muted" style="cursor: not-allowed;" />
                     </div>
-                </div>
 
-                {{-- Rij 2: Contact e-mail | Account e-mail --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">
-                            Contact e-mail <span class="text-red-600">*</span>
-                        </label>
+                    {{-- BEWERKBAAR: Contact e-mail --}}
+                    <div class="col-md-6">
+                        <label for="email" class="form-label fw-bold">Contact e-mail <span class="text-danger">*</span></label>
                         <input type="email"
                             id="email"
                             name="email"
                             value="{{ old('email', $klant->ContactEmail) }}"
-                            class="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 font-medium text-red-700
-                                @error('email') border-red-500 ring-1 ring-red-500 @else border-gray-300 @enderror"
+                            class="form-control @error('email') is-invalid @enderror"
                             required />
                         @error('email')
-                            <span class="text-red-600 text-xs mt-1 block font-medium">Het e-mailadres is al in gebruik</span>
+                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Account e-mail</label>
-                        <input type="text"
-                            value="{{ $klant->AccountEmail ?? '' }}"
-                            readonly
-                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none" />
-                    </div>
-                </div>
 
-                {{-- Rij 3: Straatnaam | Huisnummer | Toevoeging --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Straatnaam <span class="text-red-600">*</span>
-                        </label>
-                        <input type="text"
-                            value="{{ $klant->Straatnaam }}"
+                    {{-- NIET BEWERKBAAR: Account e-mail (Spiegelt Contact e-mail) --}}
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Account e-mail</label>
+                        <input type="email"
+                            id="account_email"
+                            name="account_email"
+                            value="{{ old('account_email', $klant->ContactEmail ?? '') }}"
                             readonly
-                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none" />
+                            class="form-control bg-light text-muted" style="cursor: not-allowed;" />
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                Huisnummer <span class="text-red-600">*</span>
-                            </label>
-                            <input type="text"
-                                value="{{ $klant->Huisnummer }}"
-                                readonly
-                                class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none" />
+
+                    {{-- BEWERKBAAR: Straatnaam --}}
+                    <div class="col-md-6">
+                        <label for="straatnaam" class="form-label fw-bold">Straatnaam <span class="text-danger">*</span></label>
+                        <input type="text"
+                            id="straatnaam"
+                            name="straatnaam"
+                            value="{{ old('straatnaam', $klant->Straatnaam) }}"
+                            class="form-control" required />
+                    </div>
+
+                    {{-- BEWERKBAAR: Huisnummer & Toevoeging --}}
+                    <div class="col-md-6">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label for="huisnummer" class="form-label fw-bold">Huisnummer <span class="text-danger">*</span></label>
+                                <input type="text"
+                                    id="huisnummer"
+                                    name="huisnummer"
+                                    value="{{ old('huisnummer', $klant->Huisnummer) }}"
+                                    class="form-control" required />
+                            </div>
+                            <div class="col-6">
+                                <label for="toevoeging" class="form-label fw-bold">Toevoeging</label>
+                                <input type="text"
+                                    id="toevoeging"
+                                    name="toevoeging"
+                                    value="{{ old('toevoeging', $klant->Toevoeging) }}"
+                                    class="form-control" />
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Toevoeging</label>
-                            <input type="text"
-                                value="{{ $klant->Toevoeging }}"
-                                readonly
-                                class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none" />
-                        </div>
                     </div>
-                </div>
 
-                {{-- Rij 4: Postcode | Plaats --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Postcode <span class="text-red-600">*</span>
-                        </label>
+                    {{-- BEWERKBAAR: Postcode --}}
+                    <div class="col-md-6">
+                        <label for="postcode" class="form-label fw-bold">Postcode <span class="text-danger">*</span></label>
                         <input type="text"
-                            value="{{ $klant->Postcode }}"
-                            readonly
-                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none" />
+                            id="postcode"
+                            name="postcode"
+                            value="{{ old('postcode', $klant->Postcode) }}"
+                            class="form-control" required />
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Plaats <span class="text-red-600">*</span>
-                        </label>
+
+                    {{-- BEWERKBAAR: Plaats --}}
+                    <div class="col-md-6">
+                        <label for="plaats" class="form-label fw-bold">Plaats <span class="text-danger">*</span></label>
                         <input type="text"
-                            value="{{ $klant->Plaats }}"
-                            readonly
-                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none" />
+                            id="plaats"
+                            name="plaats"
+                            value="{{ old('plaats', $klant->Plaats) }}"
+                            class="form-control" required />
                     </div>
-                </div>
 
-                {{-- Rij 5: Mobiel --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Mobiel <span class="text-red-600">*</span>
-                        </label>
+                    {{-- BEWERKBAAR: Mobiel --}}
+                    <div class="col-md-6">
+                        <label for="mobiel" class="form-label fw-bold">Mobiel <span class="text-danger">*</span></label>
                         <input type="text"
-                            value="{{ $klant->Mobiel }}"
-                            readonly
-                            class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none" />
+                            id="mobiel"
+                            name="mobiel"
+                            value="{{ old('mobiel', $klant->Mobiel) }}"
+                            class="form-control" required />
                     </div>
                 </div>
 
-                {{-- Rij 6: Bijzonderheden --}}
-                <div class="mb-5">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Bijzonderheden</label>
-                    <input type="text"
-                        value="{{ $klant->Bijzonderheden }}"
-                        readonly
-                        class="w-full px-3 py-2 border border-gray-300 rounded text-sm text-gray-500 bg-gray-50 cursor-not-allowed select-none" />
+                {{-- BEWERKBAAR: Bijzonderheden --}}
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="bijzonderheden" class="form-label fw-bold">Bijzonderheden</label>
+                        <input type="text"
+                            id="bijzonderheden"
+                            name="bijzonderheden"
+                            value="{{ old('bijzonderheden', $klant->Bijzonderheden) }}"
+                            class="form-control" />
+                    </div>
                 </div>
 
-                <p class="text-xs text-gray-500 mb-5">
-                    Velden met een <span class="text-red-600">*</span> zijn verplicht.
-                </p>
-
-                <div class="flex justify-end gap-3 border-t border-gray-100 pt-4">
-                    <button type="submit"
-                        class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-6 rounded transition shadow-sm">
-                        Opslaan
-                    </button>
-                    <a href="{{ route('klanten.show', $klant->Id) }}"
-                        class="bg-gray-500 hover:bg-gray-600 text-white text-sm font-semibold py-2 px-6 rounded transition shadow-sm">
-                        Terug
-                    </a>
+                {{-- Horizontale uitlijning van verplichte velden tekst en knoppen --}}
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center border-top pt-3 mt-3">
+                    <p class="text-muted small mb-3 mb-sm-0">
+                        Velden met een <span class="text-danger">*</span> zijn verplicht.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">Opslaan</button>
+                        <a href="{{ route('klanten.show', $klant->Id) }}" class="btn btn-outline-primary">Terug</a>
+                    </div>
                 </div>
             </form>
         </div>
-
-        {{-- Footer --}}
-        <p class="text-center text-xs text-gray-400 mt-10">© 2026 Kniploket Tiko - Alle rechten voorbehouden</p>
     </div>
-</div>
 
-<script>
-    document.querySelector('form').addEventListener('submit', function (e) {
-        const email = document.getElementById('email').value.trim();
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email) {
-            e.preventDefault();
-            alert('E-mailadres is verplicht');
-            return false;
-        }
-        if (!emailRegex.test(email)) {
-            e.preventDefault();
-            alert('Voer een geldig e-mailadres in');
-            return false;
-        }
-    });
-</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('email');
+            const accountEmailInput = document.getElementById('account_email');
+
+            // Zorg ervoor dat het 'Account e-mail' veld automatisch verandert wanneer 'Contact e-mail' wordt aangepast
+            if (emailInput && accountEmailInput) {
+                emailInput.addEventListener('input', function() {
+                    accountEmailInput.value = this.value;
+                });
+            }
+        });
+    </script>
 @endsection

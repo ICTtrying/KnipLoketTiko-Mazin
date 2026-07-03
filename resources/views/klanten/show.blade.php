@@ -1,87 +1,87 @@
 @extends('layouts.app')
 
+@section('title', 'Klantdetail')
+
 @section('content')
-<div class="min-h-screen bg-gray-100 py-6">
-    <div class="container mx-auto px-6">
+    {{-- Breadcrumb --}}
+    <nav aria-label="breadcrumb" class="mb-2">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('klanten.index') }}">Klanten</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Detail</li>
+        </ol>
+    </nav>
 
-        {{-- Breadcrumb --}}
-        <nav class="text-sm mb-2 font-medium">
-            <a href="{{ url('/') }}" class="text-red-600 hover:underline">Home</a>
-            <span class="text-gray-400 mx-2">/</span>
-            <a href="{{ route('klanten.index') }}" class="text-red-600 hover:underline">Klanten</a>
-            <span class="text-gray-400 mx-2">/</span>
-            <span class="text-gray-700">Detail</span>
-        </nav>
+    <h1 class="h3 titel-kniploket mb-3">
+        <span>Klantdetail</span>
+        <span class="text-muted ms-2" style="font-weight: normal;">{{ $klant->Voornaam }} {{ $klant->Achternaam }}</span>
+    </h1>
 
-        <h1 class="text-2xl font-bold mb-6 text-gray-900">
-            <span>Klantdetail</span>
-            <span class="text-gray-500 font-normal ml-2">— {{ $klant->Voornaam }} {{ $klant->Achternaam }}</span>
-        </h1>
+    {{-- Data Grid (Wireframe-03) binnen een Bootstrap kaart --}}
+    <div class="card shadow-sm" style="max-width: 800px;">
+        <div class="card-body p-4">
+            <div class="container-fluid p-0 small">
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Naam</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->Voornaam }} {{ $klant->Tussenvoegsel }} {{ $klant->Achternaam }}</div>
+                </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 max-w-3xl overflow-hidden">
-            <table class="w-full text-sm text-left">
-                <tbody class="divide-y divide-gray-200">
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50 w-48">Naam</td>
-                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Voornaam }} {{ $klant->Tussenvoegsel }} {{ $klant->Achternaam }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Relatienummer</td>
-                        <td class="px-6 py-3.5 text-gray-900 font-mono text-xs tracking-wider">{{ $klant->Relatienummer }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Contact e-mail</td>
-                        <td class="px-6 py-3.5 text-gray-900 font-medium text-red-700">{{ $klant->ContactEmail }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Account e-mail</td>
-                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->AccountEmail ?? '-' }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Straatnaam</td>
-                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Straatnaam }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Huisnummer</td>
-                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Huisnummer }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Toevoeging</td>
-                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Toevoeging ?? '-' }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Postcode</td>
-                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Postcode }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Plaats</td>
-                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Plaats }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Mobiel</td>
-                        <td class="px-6 py-3.5 text-gray-900">{{ $klant->Mobiel }}</td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-3.5 font-semibold text-gray-700 bg-gray-50">Bijzonderheden</td>
-                        <td class="px-6 py-3.5 text-gray-900 whitespace-pre-line">{{ $klant->Bijzonderheden ?? '-' }}</td>
-                    </tr>
-                </tbody>
-            </table>
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Relatienummer</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->Relatienummer }}</div>
+                </div>
 
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
-                <a href="{{ route('klanten.edit', $klant->Id) }}"
-                   class="bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-2 px-6 rounded transition shadow-sm">
-                    Wijzigen
-                </a>
-                <a href="{{ route('klanten.index') }}"
-                   class="bg-gray-500 hover:bg-gray-600 text-white text-sm font-semibold py-2 px-6 rounded transition shadow-sm">
-                    Terug
-                </a>
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Contact e-mail</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->ContactEmail }}</div>
+                </div>
+
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Account e-mail</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->AccountEmail ?? '-' }}</div>
+                </div>
+
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Straatnaam</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->Straatnaam }}</div>
+                </div>
+
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Huisnummer</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->Huisnummer }}</div>
+                </div>
+
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Toevoeging</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->Toevoeging ?? '-' }}</div>
+                </div>
+
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Postcode</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->Postcode }}</div>
+                </div>
+
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Plaats</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->Plaats }}</div>
+                </div>
+
+                <div class="row mb-2 pb-2 border-bottom border-light">
+                    <div class="col-sm-4 fw-bold text-dark">Mobiel</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->Mobiel }}</div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-sm-4 fw-bold text-dark">Bijzonderheden</div>
+                    <div class="col-sm-8 text-muted">{{ $klant->Bijzonderheden ?? '-' }}</div>
+                </div>
+            </div>
+
+            {{-- Actieknop uitlijning --}}
+            <div class="mt-4 d-flex justify-content-end gap-2">
+                <a href="{{ route('klanten.edit', $klant->Id) }}" class="btn btn-danger">Wijzigen</a>
+                <a href="{{ route('klanten.index') }}" class="btn btn-outline-primary">Terug</a>
             </div>
         </div>
-
-        {{-- Footer --}}
-        <p class="text-center text-xs text-gray-400 mt-10">© 2026 Kniploket Tiko - Alle rechten voorbehouden</p>
     </div>
-</div>
 @endsection

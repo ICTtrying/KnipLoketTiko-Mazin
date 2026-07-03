@@ -100,55 +100,58 @@ class KlantController extends Controller
      * Update - Save klant changes (User Story 2: Update)
      * Calls stored procedure sp_update_klant_email
      */
-    public function update(Request $request, $id)
-    {
-        try {
-            // Server-side validation
-            $validated = $request->validate([
-                'email' => 'required|email|unique:Contact,Email,' . $request->contact_id . ',Id'
-            ], [
-                'email.required' => 'E-mailadres is verplicht',
-                'email.email' => 'Voer een geldig e-mailadres in',
-                'email.unique' => 'Het e-mailadres is al in gebruik'
-            ]);
- 
-            // Get contact ID from request
-            $contactId = $request->input('contact_id');
- 
-            // Call stored procedure to update email
-            $success = null;
-            $message = null;
- 
-            DB::statement(
-                'CALL sp_update_klant_email(?, ?, @p_success, @p_message)',
-                [$contactId, $validated['email']]
-            );
- 
-            // Get output variables
-            $result = DB::select('SELECT @p_success as success, @p_message as message');
- 
-            if ($result[0]->success == 1) {
-                return redirect()->route('klanten.index')
-                    ->with('success', 'Klantgegevens bijgewerkt');
-            } else {
-                // Return with error message
-                return back()
-                    ->withErrors(['email' => $result[0]->message])
-                    ->withInput();
-            }
- 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Validation errors
-            return back()
-                ->withErrors($e->errors())
-                ->withInput();
- 
-        } catch (\Exception $e) {
-            \Log::error('KlantController@update error: ' . $e->getMessage());
- 
+public function update(Request $request, $id)
+{
+    try {
+        // 1. Validatie
+        $validated = $request->validate([
+            'email' => 'required|email|unique:Contact,Email,' . $request->contact_id . ',Id'
+        ], [
+            'email.required' => 'E-mailadres is verplicht',
+            'email.email' => 'Voer een geldig e-mailadres in',
+            'email.unique' => 'Het e-mailadres is al in gebruik'
+        ]);
+
+        // 2. Haal de huidige klant op uit de database om te vergelijken
+        // Gebruik de methode die ook in je 'show' of 'edit' staat
+        $klant = DB::select('CALL sp_get_klant_by_id(?)', [$id])[0];
+
+        // 3. Controleer of het e-mailadres écht veranderd is
+        if ($request->email === $klant->ContactEmail) {
             return back()
                 ->with('error', 'Klantgegevens zijn niet bijgewerkt')
                 ->withInput();
         }
+
+        // 4. Als het wel veranderd is, voer de update uit
+        $contactId = $request->input('contact_id');
+        
+        DB::statement(
+            'CALL sp_update_klant_email(?, ?, @p_success, @p_message)',
+            [$contactId, $validated['email']]
+        );
+        
+        $result = DB::select('SELECT @p_success as success, @p_message as message');
+
+        if ($result[0]->success == 1) {
+            return redirect()->route('klanten.index')
+                ->with('success', 'Klantgegevens bijgewerkt');
+        } else {
+            return back()
+                ->withErrors(['email' => $result[0]->message])
+                ->withInput();
+        }
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return back()
+            ->withErrors($e->errors())
+            ->withInput();
+
+    } catch (\Exception $e) {
+        \Log::error('KlantController@update error: ' . $e->getMessage());
+        return back()
+            ->with('error', 'Klantgegevens zijn niet bijgewerkt')
+            ->withInput();
     }
+}
 }
