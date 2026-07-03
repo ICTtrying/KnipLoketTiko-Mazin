@@ -19,6 +19,23 @@
         <span class="ml-2 font-normal text-slate-500">{{ $klant->Voornaam }} {{ $klant->Achternaam }}</span>
     </h1>
 
+    {{-- Success melding (verdwijnt na 3 seconden) - Wireframe-05 --}}
+    @if (session('success'))
+        <div id="successMessage" class="mb-3 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800">
+            {{ session('success') }}
+        </div>
+        <script>
+            setTimeout(() => {
+                const element = document.getElementById('successMessage');
+                if (element) {
+                    element.style.transition = 'opacity 0.5s ease-out';
+                    element.style.opacity = '0';
+                    setTimeout(() => element.remove(), 500);
+                }
+            }, 3000);
+        </script>
+    @endif
+
     {{-- Data Grid (Wireframe-03) binnen een kaart --}}
     <div class="max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <div class="space-y-2 text-sm">
@@ -33,13 +50,8 @@
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">
-                <div class="w-1/3 font-bold text-slate-900">Contact e-mail</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->ContactEmail }}</div>
-            </div>
-
-            <div class="flex border-b border-slate-200 pb-2">
-                <div class="w-1/3 font-bold text-slate-900">Account e-mail</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->AccountEmail ?? '-' }}</div>
+                <div class="w-1/3 font-bold text-slate-900">E-mail</div>
+                <div class="w-2/3 text-slate-500">{{ $klant->Email }}</div>
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">

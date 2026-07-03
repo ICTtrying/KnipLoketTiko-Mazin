@@ -58,7 +58,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if(empty($klanten))
+                        @if(count($klanten) === 0)
                             {{-- Wireframe-04: Header blijft, tabel toont foutmelding --}}
                             <tr>
                                 <td colspan="8" class="px-4 py-4 text-center text-slate-500">
@@ -74,7 +74,7 @@
                                 <td class="px-4 py-3">{{ $klant->Postcode }}</td>
                                 <td class="px-4 py-3">{{ $klant->Plaats }}</td>
                                 <td class="px-4 py-3">{{ $klant->Mobiel }}</td>
-                                <td class="px-4 py-3">{{ $klant->ContactEmail }}</td>
+                                <td class="px-4 py-3">{{ $klant->Email }}</td>
                                 <td class="px-4 py-3 text-center">
                                     <a href="{{ route('klanten.show', $klant->Id) }}" class="inline-flex items-center justify-center rounded border border-blue-600 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50">Details</a>
                                 </td>
