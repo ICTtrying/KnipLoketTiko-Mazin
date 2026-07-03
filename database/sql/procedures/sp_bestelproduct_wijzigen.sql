@@ -5,7 +5,6 @@
 --             p_succes BIT OUT - resultaatindicator, p_foutmelding VARCHAR(255) OUT - foutmelding
 -- Return: geen resultset; vult p_succes en p_foutmelding
 -- =============================================
-DELIMITER $$
 
 CREATE PROCEDURE sp_bestelproduct_wijzigen(
     IN p_id INT,
@@ -40,6 +39,5 @@ BEGIN
         SET p_succes = 1;
         SET p_foutmelding = NULL;
     END IF;
-END$$
+END
 
-DELIMITER ;

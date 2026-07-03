@@ -6,7 +6,6 @@
 -- Return: resultset met BestellingId, BestelNummer, KlantNaam, Relatienummer, Datum, Tijd,
 --         Bestelstatus, AantalProducten, Totaal
 -- =============================================
-DELIMITER $$
 
 CREATE PROCEDURE sp_bestellingen_overzicht(IN p_status VARCHAR(30))
 BEGIN
@@ -27,6 +26,5 @@ BEGIN
       AND (p_status IS NULL OR p_status = 'Alle statussen' OR b.Bestelstatus = p_status)
     GROUP BY b.Id, b.BestelNummer, k.Naam, k.Id, b.Datum, b.Tijd, b.Bestelstatus
     ORDER BY b.Datum DESC, b.Tijd DESC;
-END$$
+END
 
-DELIMITER ;
