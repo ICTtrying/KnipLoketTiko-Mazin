@@ -12,4 +12,29 @@
     </nav>
 
     <h1 class="h3 text-danger mb-3">Overzicht producten</h1>
+
+    {{-- Wireframe-02/03: filterbalk in een whitecard boven de tabel --}}
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="GET" action="{{ route('products.index') }}">
+                <div class="d-flex align-items-end gap-2 flex-wrap">
+                    <div>
+                        <label for="categorie" class="form-label mb-1">Categorie selecteren</label>
+                        {{-- Client-side validatie: de select beperkt de invoer tot de geldige categorieën --}}
+                        <select id="categorie" name="categorie" class="form-select @error('categorie') is-invalid @enderror">
+                            <option value="" @selected($geselecteerdeCategorieId === null)>Alle categorieën</option>
+                            @foreach ($categorieen as $categorie)
+                                <option value="{{ $categorie->Id }}" @selected($geselecteerdeCategorieId === (int) $categorie->Id)>{{ $categorie->Naam }}</option>
+                            @endforeach
+                        </select>
+                        @error('categorie')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="btn btn-danger">Maak selectie</button>
+                    <a href="{{ route('products.index') }}" class="btn btn-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
