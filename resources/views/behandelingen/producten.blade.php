@@ -32,13 +32,13 @@
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">EAN-code</th>
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Aantal op voorraad</th>
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Verkoopprijs</th>
-                        <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Actie</th>
+                        <th scope="col" class="px-4 py-2 text-center text-sm font-semibold">Actie</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($producten as $product)
                         <tr class="border-t border-slate-200 hover:bg-slate-50">
-                            <td class="px-4 py-3 font-semibold">{{ $product->Naam }}</td>
+                            <td class="px-1 py-3 font-semibold">{{ $product->Naam }}</td>
                             <td class="px-4 py-3">{{ $product->Merk }}</td>
                             <td class="px-4 py-3">{{ $product->Omschrijving }}</td>
                             <td class="px-4 py-3">{{ $product->EANcode }}</td>
@@ -46,7 +46,7 @@
                             <td class="px-4 py-3">EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
                             <td class="px-4 py-3">
                                 <a href="{{ route('behandelingen.product.detail', $product->ProductId) }}"
-                                    class="inline-flex items-center justify-center rounded bg-kniploket-danger px-4 py-2 text-sm font-medium text-white hover:bg-kniploket-danger-dark">Details</a>
+                                    class="inline-flex items-center justify-center rounded bg-kniploket-danger px-4 py-1 text-sm font-medium text-white hover:bg-kniploket-danger-dark">Wijzigen</a>
                             </td>
                         </tr>
                     @endforeach
@@ -56,7 +56,7 @@
 
         {{-- Terug-knop rechts uitgelijnd --}}
         <div class="flex justify-end pt-4">
-            <a href="{{ route('behandelingen.index') }}" class="inline-flex items-center justify-center rounded border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50">Terug</a>
+            <a href="{{ route('behandelingen.index') }}" class="inline-flex items-center justify-center rounded border border-blue-600 px-6 py-1 m-4 text-sm font-medium text-blue-600 hover:bg-blue-50">Terug</a>
         </div>
     </div>
 @endsection
