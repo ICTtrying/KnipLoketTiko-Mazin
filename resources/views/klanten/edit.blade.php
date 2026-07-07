@@ -19,13 +19,22 @@
         <span class="ml-2 font-normal text-slate-500">{{ $klant->Voornaam }} {{ $klant->Achternaam }}</span>
     </h1>
 
+    {{-- Error melding (Wireframe-06) --}}
+    @if ($errors->any())
+        <div class="mb-3 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+            <p class="font-semibold">Klantgegevens zijn niet bijgewerkt</p>
+            <ul class="mt-2 list-inside list-disc space-y-1 text-sm">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <form action="{{ route('klanten.update', $klant->Id) }}" method="POST">
             @csrf
             @method('PUT')
-
-            {{-- Fallback: als ContactId mist, probeer Id (voor het geval je de query anders hebt opgebouwd) --}}
-            <input type="hidden" name="contact_id" value="{{ $klant->ContactId ?? $klant->Id }}">
 
             <div class="grid grid-cols-1 gap-3 md:grid-cols-2 mb-3">
 
@@ -48,29 +57,18 @@
                         class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm text-slate-500 cursor-not-allowed" />
                 </div>
 
-                {{-- BEWERKBAAR: Contact e-mail --}}
+                {{-- BEWERKBAAR: E-mail --}}
                 <div>
-                    <label for="email" class="mb-1 block text-sm font-bold text-slate-700">Contact e-mail <span class="text-kniploket-danger">*</span></label>
+                    <label for="email" class="mb-1 block text-sm font-bold text-slate-700">E-mail <span class="text-kniploket-danger">*</span></label>
                     <input type="email"
                         id="email"
                         name="email"
-                        value="{{ old('email', $klant->ContactEmail) }}"
+                        value="{{ old('email', $klant->Email) }}"
                         class="w-full rounded border border-slate-300 px-3 py-2 text-sm @error('email') border-red-500 @enderror"
                         required />
                     @error('email')
                         <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
                     @enderror
-                </div>
-
-                {{-- NIET BEWERKBAAR: Account e-mail (Spiegelt Contact e-mail) --}}
-                <div>
-                    <label class="mb-1 block text-sm font-bold text-slate-700">Account e-mail</label>
-                    <input type="email"
-                        id="account_email"
-                        name="account_email"
-                        value="{{ old('account_email', $klant->ContactEmail ?? '') }}"
-                        readonly
-                        class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm text-slate-500 cursor-not-allowed" />
                 </div>
 
                 {{-- BEWERKBAAR: Straatnaam --}}
@@ -159,17 +157,4 @@
         </form>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const emailInput = document.getElementById('email');
-            const accountEmailInput = document.getElementById('account_email');
-
-            // Zorg ervoor dat het 'Account e-mail' veld automatisch verandert wanneer 'Contact e-mail' wordt aangepast
-            if (emailInput && accountEmailInput) {
-                emailInput.addEventListener('input', function() {
-                    accountEmailInput.value = this.value;
-                });
-            }
-        });
-    </script>
 @endsection
