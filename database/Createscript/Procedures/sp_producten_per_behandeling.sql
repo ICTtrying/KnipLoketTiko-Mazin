@@ -25,7 +25,7 @@ BEGIN
     INNER JOIN Product p ON p.Id = v.ProductId AND p.IsActief = 1
     WHERE b.Id = p_behandeling_id
       AND b.IsActief = 1
-    ORDER BY p.Naam ASC;
+    ORDER BY p.DatumAangemaakt DESC;
 END$$
 
 DELIMITER ;

@@ -41,6 +41,7 @@ BEGIN
         Opmerking = p_nieuwe_opmerking,
         DatumGewijzigd = NOW()
     WHERE Id = p_product_id;
+    
 END$$
 
 DELIMITER ;
