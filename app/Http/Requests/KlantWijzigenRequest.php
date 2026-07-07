@@ -64,7 +64,7 @@ class KlantWijzigenRequest extends FormRequest
             'toevoeging' => ['nullable', 'string', 'max:10'],
             'postcode' => ['required', 'string', 'max:10'],
             'plaats' => ['required', 'string', 'max:100'],
-            'mobiel' => ['required', 'string', 'max:15'],
+            'mobiel' => ['required', 'string', 'max:20'],
             'bijzonderheden' => ['nullable', 'string', 'max:50'],
         ];
     }

@@ -21,7 +21,7 @@ CREATE PROCEDURE sp_klant_wijzigen(
     IN p_toevoeging VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     IN p_postcode VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     IN p_plaats VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-    IN p_mobiel VARCHAR(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    IN p_mobiel VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     OUT p_succes BIT,
     OUT p_foutmelding VARCHAR(255)
 )

@@ -38,8 +38,6 @@ class KlantController extends Controller
             'Email' => $klant->Email ?? '-',
         ]);
 
-        dd($klanten);
-
         return view('klanten.index', [
             'klanten' => $klanten,
             'postcode' => $postcode,
