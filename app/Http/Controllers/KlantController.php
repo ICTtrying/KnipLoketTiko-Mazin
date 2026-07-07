@@ -8,7 +8,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Throwable;
 
 /**
  * Controller voor het klantenoverzicht, de detailpagina en het wijzigen
@@ -20,31 +22,39 @@ class KlantController extends Controller
     /**
      * Overzicht van alle actieve klanten, optioneel gefilterd op postcode.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
-        $postcode = trim((string) $request->input('postcode', ''));
-        $postcode = $postcode === '' ? null : $postcode;
+        try {
+            $postcode = trim((string) $request->input('postcode', ''));
+            $postcode = $postcode === '' ? null : $postcode;
 
-        $klanten = $this->haalKlantenOp($postcode)->map(fn (object $klant): object => (object) [
-            'Id' => $klant->Id,
-            'Voornaam' => $klant->Voornaam,
-            'Achternaam' => $klant->Achternaam,
-            'Relatienummer' => $klant->Relatienummer,
-            'Straatnaam' => $klant->Straatnaam ?? '-',
-            'Huisnummer' => $klant->Huisnummer ?? '-',
-            'Postcode' => $klant->Postcode ?? '-',
-            'Plaats' => $klant->Plaats ?? '-',
-            'Mobiel' => $klant->Mobiel ?? '-',
-            'Email' => $klant->Email ?? '-',
-        ]);
+            Log::info('Klantenoverzicht opgevraagd', ['postcode' => $postcode]);
 
-        return view('klanten.index', [
-            'klanten' => $klanten,
-            'postcode' => $postcode,
-            'message' => $postcode !== null && $klanten->isEmpty()
-                ? 'Er zijn geen klanten bekent die de geselecteerde postcode hebben'
-                : null,
-        ]);
+            $klanten = $this->haalKlantenOp($postcode)->map(fn (object $klant): object => (object) [
+                'Id' => $klant->Id,
+                'Voornaam' => $klant->Voornaam,
+                'Achternaam' => $klant->Achternaam,
+                'Relatienummer' => $klant->Relatienummer,
+                'Straatnaam' => $klant->Straatnaam ?? '-',
+                'Huisnummer' => $klant->Huisnummer ?? '-',
+                'Postcode' => $klant->Postcode ?? '-',
+                'Plaats' => $klant->Plaats ?? '-',
+                'Mobiel' => $klant->Mobiel ?? '-',
+                'Email' => $klant->Email ?? '-',
+            ]);
+
+            return view('klanten.index', [
+                'klanten' => $klanten,
+                'postcode' => $postcode,
+                'message' => $postcode !== null && $klanten->isEmpty()
+                    ? 'Er zijn geen klanten bekent die de geselecteerde postcode hebben'
+                    : null,
+            ]);
+        } catch (Throwable $e) {
+            Log::error('Fout bij ophalen klantenoverzicht', ['error' => $e->getMessage()]);
+
+            return back()->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van de klanten.');
+        }
     }
 
     /**
@@ -52,28 +62,35 @@ class KlantController extends Controller
      */
     public function show(int $id): View|RedirectResponse
     {
-        $klant = $this->haalKlantOp($id);
+        try {
+            Log::info('Klantdetail opgevraagd', ['klant_id' => $id]);
 
-        if ($klant === null) {
-            return redirect()->route('klanten.index')->with('error', 'Klant niet gevonden');
+            $klant = $this->haalKlantOp($id);
+
+            if ($klant === null) {
+                return redirect()->route('klanten.index')->with('foutmelding', 'Klant niet gevonden');
+            }
+
+            return view('klanten.show', ['klant' => (object) [
+                'Id' => $klant->Id,
+                'Voornaam' => $klant->Voornaam,
+                'Tussenvoegsel' => $klant->Tussenvoegsel,
+                'Achternaam' => $klant->Achternaam,
+                'Relatienummer' => $klant->Relatienummer,
+                'Email' => $klant->Email ?? '-',
+                'Straatnaam' => $klant->Straatnaam ?? '-',
+                'Huisnummer' => $klant->Huisnummer ?? '-',
+                'Toevoeging' => $klant->Toevoeging,
+                'Postcode' => $klant->Postcode ?? '-',
+                'Plaats' => $klant->Plaats ?? '-',
+                'Mobiel' => $klant->Mobiel ?? '-',
+                'Bijzonderheden' => $klant->Bijzonderheden,
+            ]]);
+        } catch (Throwable $e) {
+            Log::error('Fout bij ophalen klantdetail', ['klant_id' => $id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('klanten.index')->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van de klant.');
         }
-
-        return view('klanten.show', ['klant' => (object) [
-            'Id' => $klant->Id,
-            'Voornaam' => $klant->Voornaam,
-            'Tussenvoegsel' => $klant->Tussenvoegsel,
-            'Achternaam' => $klant->Achternaam,
-            'Relatienummer' => $klant->Relatienummer,
-            'Email' => $klant->Email ?? '-',
-            'Straatnaam' => $klant->Straatnaam ?? '-',
-            'Huisnummer' => $klant->Huisnummer ?? '-',
-            'Toevoeging' => $klant->Toevoeging,
-            'Postcode' => $klant->Postcode ?? '-',
-            'Plaats' => $klant->Plaats ?? '-',
-            'Mobiel' => $klant->Mobiel ?? '-',
-            'Bijzonderheden' => $klant->Bijzonderheden,
-        ]]);
-        
     }
 
     /**
@@ -81,28 +98,35 @@ class KlantController extends Controller
      */
     public function edit(int $id): View|RedirectResponse
     {
-        $klant = $this->haalKlantOp($id);
+        try {
+            Log::info('Klant wijzig-formulier geopend', ['klant_id' => $id]);
 
-        if ($klant === null) {
-            return redirect()->route('klanten.index')->with('error', 'Klant niet gevonden');
+            $klant = $this->haalKlantOp($id);
+
+            if ($klant === null) {
+                return redirect()->route('klanten.index')->with('foutmelding', 'Klant niet gevonden');
+            }
+
+            return view('klanten.edit', ['klant' => (object) [
+                'Id' => $klant->Id,
+                'Voornaam' => $klant->Voornaam,
+                'Tussenvoegsel' => $klant->Tussenvoegsel,
+                'Achternaam' => $klant->Achternaam,
+                'Relatienummer' => $klant->Relatienummer,
+                'Email' => $klant->Email ?? '',
+                'Straatnaam' => $klant->Straatnaam ?? '',
+                'Huisnummer' => $klant->Huisnummer ?? '',
+                'Toevoeging' => $klant->Toevoeging,
+                'Postcode' => $klant->Postcode ?? '',
+                'Plaats' => $klant->Plaats ?? '',
+                'Mobiel' => $klant->Mobiel ?? '',
+                'Bijzonderheden' => $klant->Bijzonderheden,
+            ]]);
+        } catch (Throwable $e) {
+            Log::error('Fout bij openen wijzig-formulier klant', ['klant_id' => $id, 'error' => $e->getMessage()]);
+
+            return redirect()->route('klanten.index')->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van de klant.');
         }
-        
-
-        return view('klanten.edit', ['klant' => (object) [
-            'Id' => $klant->Id,
-            'Voornaam' => $klant->Voornaam,
-            'Tussenvoegsel' => $klant->Tussenvoegsel,
-            'Achternaam' => $klant->Achternaam,
-            'Relatienummer' => $klant->Relatienummer,
-            'Email' => $klant->Email ?? '',
-            'Straatnaam' => $klant->Straatnaam ?? '',
-            'Huisnummer' => $klant->Huisnummer ?? '',
-            'Toevoeging' => $klant->Toevoeging,
-            'Postcode' => $klant->Postcode ?? '',
-            'Plaats' => $klant->Plaats ?? '',
-            'Mobiel' => $klant->Mobiel ?? '',
-            'Bijzonderheden' => $klant->Bijzonderheden,
-        ]]);
     }
 
     /**
@@ -110,25 +134,31 @@ class KlantController extends Controller
      */
     public function update(KlantWijzigenRequest $request, int $id): RedirectResponse
     {
-        $gevalideerd = $request->validated();
+        try {
+            $gevalideerd = $request->validated();
 
-        [$succes, $foutmelding] = $this->wijzigKlant($id, $gevalideerd);
+            Log::info('Poging tot wijzigen klantgegevens', ['klant_id' => $id]);
 
-        if (! $succes) {
-            return back()
-                ->with('error', $foutmelding ?? 'Klantgegevens zijn niet bijgewerkt')
-                ->withInput();
+            [$succes, $foutmelding] = $this->wijzigKlant($id, $gevalideerd);
+
+            if (! $succes) {
+                Log::warning('Wijzigen klantgegevens geweigerd', ['klant_id' => $id, 'reden' => $foutmelding]);
+
+                // withErrors zorgt dat de "Klantgegevens zijn niet bijgewerkt"-banner
+                // op het wijzigformulier verschijnt, gelijk aan het gedrag bij validatiefouten
+                return back()
+                    ->withInput()
+                    ->withErrors(['email' => $foutmelding ?? 'Klantgegevens zijn niet bijgewerkt']);
+            }
+
+            Log::info('Klantgegevens succesvol gewijzigd', ['klant_id' => $id]);
+
+            return redirect()->route('klanten.index')->with('succesmelding', 'Klantgegevens bijgewerkt');
+        } catch (Throwable $e) {
+            Log::error('Fout bij wijzigen klantgegevens', ['klant_id' => $id, 'error' => $e->getMessage()]);
+
+            return back()->withInput()->with('foutmelding', 'Er is een onverwachte fout opgetreden.');
         }
-
-        return redirect()->route('klanten.show', $id)->with('success', 'Klantgegevens bijgewerkt');
-    }
-
-    /**
-     * Controleer of de database stored procedures ondersteunt.
-     */
-    private function gebruiktStoredProcedures(): bool
-    {
-        return in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true);
     }
 
     /**

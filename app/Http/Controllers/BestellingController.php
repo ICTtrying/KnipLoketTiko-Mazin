@@ -7,7 +7,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +15,8 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 /**
- * Controller voor het beheren van bestellingen.
+ * Controller voor het bestellingenoverzicht en het wijzigen van het aantal
+ * van een bestelproduct.
  *
  * Op MySQL/MariaDB lopen alle lees- en schrijfacties via stored procedures;
  * op sqlite (testomgeving) wordt een gelijkwaardige query-fallback gebruikt.
@@ -33,7 +33,6 @@ class BestellingController extends Controller
             Log::info('Bestellingen overzicht opgevraagd', ['status' => $status]);
 
             $bestellingen = $this->haalBestellingenOp($status);
-
             $paginator = $this->maakPaginatie($bestellingen, $request, 4);
 
             return view('bestellingen.index', [
@@ -41,44 +40,10 @@ class BestellingController extends Controller
                 'geselecteerdeStatus' => $status,
                 'statusLabels' => Bestelling::STATUS_LABELS,
             ]);
-        } catch (HttpExceptionInterface|ModelNotFoundException $e) {
-            throw $e;
         } catch (Throwable $e) {
             Log::error('Fout bij ophalen bestellingen overzicht', ['error' => $e->getMessage()]);
 
             return back()->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van de bestellingen.');
-        }
-    }
-
-    /**
-     * Niet gebruikt, maar aanwezig voor CRUD-consistentie.
-     */
-    public function create(): RedirectResponse
-    {
-        try {
-            abort(404);
-        } catch (HttpExceptionInterface $e) {
-            throw $e;
-        } catch (Throwable $e) {
-            Log::error('Fout bij create bestelling', ['error' => $e->getMessage()]);
-
-            return back();
-        }
-    }
-
-    /**
-     * Niet gebruikt, maar aanwezig voor CRUD-consistentie.
-     */
-    public function store(Request $request): RedirectResponse
-    {
-        try {
-            abort(404);
-        } catch (HttpExceptionInterface $e) {
-            throw $e;
-        } catch (Throwable $e) {
-            Log::error('Fout bij store bestelling', ['error' => $e->getMessage()]);
-
-            return back();
         }
     }
 
@@ -104,54 +69,6 @@ class BestellingController extends Controller
             Log::error('Fout bij ophalen producten per bestelling', ['bestelling_id' => $id, 'error' => $e->getMessage()]);
 
             return back()->with('foutmelding', 'Er is een fout opgetreden bij het ophalen van de producten.');
-        }
-    }
-
-    /**
-     * Niet gebruikt, maar aanwezig voor CRUD-consistentie.
-     */
-    public function edit(int $id): RedirectResponse
-    {
-        try {
-            abort(404);
-        } catch (HttpExceptionInterface $e) {
-            throw $e;
-        } catch (Throwable $e) {
-            Log::error('Fout bij edit bestelling', ['error' => $e->getMessage()]);
-
-            return back();
-        }
-    }
-
-    /**
-     * Niet gebruikt, maar aanwezig voor CRUD-consistentie.
-     */
-    public function update(Request $request, int $id): RedirectResponse
-    {
-        try {
-            abort(404);
-        } catch (HttpExceptionInterface $e) {
-            throw $e;
-        } catch (Throwable $e) {
-            Log::error('Fout bij update bestelling', ['error' => $e->getMessage()]);
-
-            return back();
-        }
-    }
-
-    /**
-     * Niet gebruikt, maar aanwezig voor CRUD-consistentie.
-     */
-    public function destroy(int $id): RedirectResponse
-    {
-        try {
-            abort(404);
-        } catch (HttpExceptionInterface $e) {
-            throw $e;
-        } catch (Throwable $e) {
-            Log::error('Fout bij destroy bestelling', ['error' => $e->getMessage()]);
-
-            return back();
         }
     }
 
@@ -233,29 +150,6 @@ class BestellingController extends Controller
 
             return back()->with('foutmelding', 'Er is een onverwachte fout opgetreden.');
         }
-    }
-
-    /**
-     * Bouw een paginator op basis van een collectie.
-     */
-    private function maakPaginatie(Collection $items, Request $request, int $perPagina): LengthAwarePaginator
-    {
-        $huidigePagina = LengthAwarePaginator::resolveCurrentPage();
-        $totaal = $items->count();
-        $resultaten = $items->slice(($huidigePagina - 1) * $perPagina, $perPagina)->values();
-
-        return new LengthAwarePaginator($resultaten, $totaal, $perPagina, $huidigePagina, [
-            'path' => $request->url(),
-            'query' => $request->query(),
-        ]);
-    }
-
-    /**
-     * Controleer of de database stored procedures ondersteunt.
-     */
-    private function gebruiktStoredProcedures(): bool
-    {
-        return in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true);
     }
 
     /**
