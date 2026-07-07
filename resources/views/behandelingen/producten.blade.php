@@ -38,7 +38,7 @@
                 <tbody>
                     @foreach ($producten as $product)
                         <tr class="border-t border-slate-200 hover:bg-slate-50">
-                            <td class="px-4 py-3 font-semibold">{{ $product->Naam }}</td>
+                            <td class="px-1 py-3 font-semibold">{{ $product->Naam }}</td>
                             <td class="px-4 py-3">{{ $product->Merk }}</td>
                             <td class="px-4 py-3">{{ $product->Omschrijving }}</td>
                             <td class="px-4 py-3">{{ $product->EANcode }}</td>
