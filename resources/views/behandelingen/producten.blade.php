@@ -8,7 +8,8 @@
         <ol class="flex flex-wrap items-center gap-2 text-sm">
             <li><a href="{{ route('home') }}" class="text-kniploket-red hover:underline">Home</a></li>
             <li class="text-slate-400" aria-hidden="true">/</li>
-            <li><a href="{{ route('behandelingen.index') }}" class="text-kniploket-red hover:underline">Behandelingen</a></li>
+            <li><a href="{{ route('behandelingen.index') }}" class="text-kniploket-red hover:underline">Behandelingen</a>
+            </li>
             <li class="text-slate-400" aria-hidden="true">/</li>
             <li class="text-slate-500" aria-current="page">Detail</li>
         </ol>
@@ -24,7 +25,7 @@
     <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
         <div class="overflow-x-auto">
             <table class="w-full border-collapse">
-                <thead class="tabel-header-kniploket text-white">
+                <thead class="tabel-header-kniploket text-white whitespace-nowrap">
                     <tr>
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Product</th>
                         <th scope="col" class="px-4 py-2 text-left text-sm font-semibold">Merk</th>
@@ -38,13 +39,16 @@
                 <tbody>
                     @foreach ($producten as $product)
                         <tr class="border-t border-slate-200 hover:bg-slate-50">
-                            <td class="px-1 py-3 font-semibold">{{ $product->Naam }}</td>
-                            <td class="px-4 py-3">{{ $product->Merk }}</td>
+                            {{-- px-4 toegevoegd (stond op px-1) en whitespace-nowrap --}}
+                            <td class="px-4 py-3 font-semibold whitespace-nowrap">{{ $product->Naam }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ $product->Merk }}</td>
+                            {{-- Omschrijving heeft GEEN nowrap, zodat deze mag uitvullen en afbreken indien nodig --}}
                             <td class="px-4 py-3">{{ $product->Omschrijving }}</td>
-                            <td class="px-4 py-3">{{ $product->EANcode }}</td>
-                            <td class="px-4 py-3">{{ $product->AantalOpVoorraad }}</td>
-                            <td class="px-4 py-3">EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 whitespace-nowrap">{{ $product->EANcode }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-center">{{ $product->AantalOpVoorraad }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">EUR
+                                {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-center">
                                 <a href="{{ route('behandelingen.product.detail', $product->ProductId) }}"
                                     class="inline-flex items-center justify-center rounded bg-kniploket-danger px-4 py-1 text-sm font-medium text-white hover:bg-kniploket-danger-dark">Wijzigen</a>
                             </td>
@@ -56,7 +60,8 @@
 
         {{-- Terug-knop rechts uitgelijnd --}}
         <div class="flex justify-end pt-4">
-            <a href="{{ route('behandelingen.index') }}" class="inline-flex items-center justify-center rounded border border-blue-600 px-6 py-1 m-4 text-sm font-medium text-blue-600 hover:bg-blue-50">Terug</a>
+            <a href="{{ route('behandelingen.index') }}"
+                class="inline-flex items-center justify-center rounded border border-blue-600 px-6 py-1 m-4 text-sm font-medium text-blue-600 hover:bg-blue-50">Terug</a>
         </div>
     </div>
 @endsection
