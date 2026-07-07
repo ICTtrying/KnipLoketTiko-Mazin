@@ -2,6 +2,8 @@
 
 @section('title', 'Product wijzigen')
 
+@section('content-max-width', 'max-w-3xl')
+
 @section('content')
     {{-- Wireframe-04: breadcrumb Home / Producten / Wijzigen --}}
     <nav aria-label="breadcrumb" class="mb-4">

@@ -70,14 +70,14 @@
 
         <main class="mx-auto w-full max-w-6xl flex-grow px-4 pt-6 pb-4">
             @if (session('succesmelding'))
-                <div class="mb-4 rounded border border-emerald-300 w-140 bg-emerald-100 px-4 py-3 text-emerald-900" role="alert">
+                <div class="mb-4 rounded border border-emerald-300 @yield('content-max-width', 'w-full') bg-emerald-100 px-4 py-3 text-emerald-900" role="alert">
                     {{ session('succesmelding') }}
                 </div>
             @endif
 
             @if (session('foutmelding'))
                 {{-- Alleen de algemene melding; veldspecifieke fouten staan bij het veld zelf --}}
-                <div class="mb-4 rounded border border-red-300 w-140 bg-red-100 px-4 py-3 text-red-900" role="alert">
+                <div class="mb-4 rounded border border-red-300 @yield('content-max-width', 'w-full') bg-red-100 px-4 py-3 text-red-900" role="alert">
                     {{ session('foutmelding') }}
                 </div>
             @endif

@@ -2,6 +2,8 @@
 
 @section('title', 'Productdetail')
 
+@section('content-max-width', 'max-w-2xl')
+
 @section('content')
     {{-- Wireframe-03: breadcrumb Home / Producten / Detail --}}
     <nav aria-label="breadcrumb" class="mb-4">
