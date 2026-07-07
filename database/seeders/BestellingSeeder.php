@@ -28,6 +28,9 @@ class BestellingSeeder extends Seeder
         DB::table('Voorraad')->delete();
         DB::table('Product')->delete();
         DB::table('Categorie')->delete();
+        DB::table('KlantPerContact')->delete();
+        // Contact-Id's 11 t/m 16 zijn gereserveerd voor deze klanten, exact zoals het create-script
+        DB::table('Contact')->whereIn('Id', range(11, 16))->delete();
         DB::table('Klant')->delete();
         DB::table('users')->delete();
 
@@ -50,6 +53,25 @@ class BestellingSeeder extends Seeder
             ['Id' => 4, 'UserId' => 15, 'Voornaam' => 'Ahmed', 'Tussenvoegsel' => null, 'Achternaam' => 'Mansouri', 'Relatienummer' => 'KL-2026-004', 'Bijzonderheden' => 'Wil strakke fade.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
             ['Id' => 5, 'UserId' => 16, 'Voornaam' => 'Marieke', 'Tussenvoegsel' => 'van den', 'Achternaam' => 'Berg', 'Relatienummer' => 'KL-2026-005', 'Bijzonderheden' => 'Gevoelige hoofdhuid.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
             ['Id' => 6, 'UserId' => 17, 'Voornaam' => 'Daan', 'Tussenvoegsel' => null, 'Achternaam' => 'Visser', 'Relatienummer' => 'KL-2026-006', 'Bijzonderheden' => 'Liefst einde middag.', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+        ]);
+
+        // Contactgegevens per klant, exact zoals database/Createscript/SQL_Dag3.sql (Contact Id 11-16)
+        DB::table('Contact')->insert([
+            ['Id' => 11, 'Straatnaam' => 'Oudegracht', 'Huisnummer' => 88, 'Toevoeging' => 'A', 'Postcode' => '3512AB', 'Plaats' => 'Utrecht', 'Email' => 'piet.van.loenen@gmail.com', 'Mobiel' => '+31 6 1234 61 71', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 12, 'Straatnaam' => 'Biltstraat', 'Huisnummer' => 44, 'Toevoeging' => null, 'Postcode' => '3572BC', 'Plaats' => 'Utrecht', 'Email' => 'jan.jansen@outlook.com', 'Mobiel' => '+31 6 1234 61 72', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 13, 'Straatnaam' => 'Merelstraat', 'Huisnummer' => 12, 'Toevoeging' => null, 'Postcode' => '3514CN', 'Plaats' => 'Utrecht', 'Email' => 'saskia.deboer@yahoo.com', 'Mobiel' => '+31 6 1234 61 73', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 14, 'Straatnaam' => 'Winkel van Sinkelstraat', 'Huisnummer' => 4, 'Toevoeging' => null, 'Postcode' => '3511KV', 'Plaats' => 'Utrecht', 'Email' => 'ahmed.mansouri@icloud.com', 'Mobiel' => '+31 6 1234 61 74', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 15, 'Straatnaam' => 'Adelaarstraat', 'Huisnummer' => 50, 'Toevoeging' => null, 'Postcode' => '3514CH', 'Plaats' => 'Utrecht', 'Email' => 'marieke.vandenberg@ziggo.nl', 'Mobiel' => '+31 6 1234 61 75', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 16, 'Straatnaam' => 'Vleutenseweg', 'Huisnummer' => 73, 'Toevoeging' => null, 'Postcode' => '3532HA', 'Plaats' => 'Utrecht', 'Email' => 'daan.visser@live.nl', 'Mobiel' => '+31 6 1234 61 76', 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+        ]);
+
+        DB::table('KlantPerContact')->insert([
+            ['Id' => 1, 'KlantId' => 1, 'ContactId' => 11, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 2, 'KlantId' => 2, 'ContactId' => 12, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 3, 'KlantId' => 3, 'ContactId' => 13, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 4, 'KlantId' => 4, 'ContactId' => 14, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 5, 'KlantId' => 5, 'ContactId' => 15, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
+            ['Id' => 6, 'KlantId' => 6, 'ContactId' => 16, 'IsActief' => 1, 'Opmerking' => null, 'DatumAangemaakt' => $nu, 'DatumGewijzigd' => $nu],
         ]);
 
         // Categorieën, producten en voorraad komen 1-op-1 uit database/creatscript/createscript.sql
