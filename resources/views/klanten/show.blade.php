@@ -41,59 +41,75 @@
         <div class="space-y-2 text-sm">
             <div class="flex border-b border-slate-200 pb-2">
                 <div class="w-1/3 font-bold text-slate-900">Naam</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Voornaam }} {{ $klant->Tussenvoegsel }} {{ $klant->Achternaam }}</div>
+                <div class="w-2/3 text-slate-600">
+                    {{ $klant->Voornaam }} 
+                    @if($klant->Tussenvoegsel){{ $klant->Tussenvoegsel }} @endif
+                    {{ $klant->Achternaam }}
+                </div>
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">
                 <div class="w-1/3 font-bold text-slate-900">Relatienummer</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Relatienummer }}</div>
+                <div class="w-2/3 text-slate-600">{{ $klant->Relatienummer }}</div>
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">
                 <div class="w-1/3 font-bold text-slate-900">E-mail</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Email }}</div>
+                <div class="w-2/3 text-slate-600">
+                    {{ $klant->Email && $klant->Email !== '-' ? $klant->Email : '(geen e-mail)' }}
+                </div>
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">
                 <div class="w-1/3 font-bold text-slate-900">Straatnaam</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Straatnaam }}</div>
+                <div class="w-2/3 text-slate-600">
+                    {{ $klant->Straatnaam && $klant->Straatnaam !== '-' ? $klant->Straatnaam : '(geen straat)' }}
+                </div>
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">
                 <div class="w-1/3 font-bold text-slate-900">Huisnummer</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Huisnummer }}</div>
+                <div class="w-2/3 text-slate-600">
+                    {{ $klant->Huisnummer && $klant->Huisnummer !== '-' ? $klant->Huisnummer : '(geen nummer)' }}
+                </div>
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">
                 <div class="w-1/3 font-bold text-slate-900">Toevoeging</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Toevoeging ?? '-' }}</div>
+                <div class="w-2/3 text-slate-600">{{ $klant->Toevoeging ?? '(geen toevoeging)' }}</div>
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">
                 <div class="w-1/3 font-bold text-slate-900">Postcode</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Postcode }}</div>
+                <div class="w-2/3 text-slate-600">
+                    {{ $klant->Postcode && $klant->Postcode !== '-' ? $klant->Postcode : '(geen postcode)' }}
+                </div>
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">
                 <div class="w-1/3 font-bold text-slate-900">Plaats</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Plaats }}</div>
+                <div class="w-2/3 text-slate-600">
+                    {{ $klant->Plaats && $klant->Plaats !== '-' ? $klant->Plaats : '(geen plaats)' }}
+                </div>
             </div>
 
             <div class="flex border-b border-slate-200 pb-2">
                 <div class="w-1/3 font-bold text-slate-900">Mobiel</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Mobiel }}</div>
+                <div class="w-2/3 text-slate-600">
+                    {{ $klant->Mobiel && $klant->Mobiel !== '-' ? $klant->Mobiel : '(geen mobiel)' }}
+                </div>
             </div>
 
             <div class="flex">
                 <div class="w-1/3 font-bold text-slate-900">Bijzonderheden</div>
-                <div class="w-2/3 text-slate-500">{{ $klant->Bijzonderheden ?? '-' }}</div>
+                <div class="w-2/3 text-slate-600">{{ $klant->Bijzonderheden ?: '(geen bijzonderheden)' }}</div>
             </div>
         </div>
 
         {{-- Actieknop uitlijning --}}
         <div class="mt-4 flex justify-end gap-2">
-            <a href="{{ route('klanten.edit', $klant->Id) }}" class="inline-flex items-center justify-center rounded bg-kniploket-danger px-4 py-2 text-sm font-medium text-white hover:bg-kniploket-danger-dark">Wijzigen</a>
-            <a href="{{ route('klanten.index') }}" class="inline-flex items-center justify-center rounded border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50">Terug</a>
+            <a href="{{ route('klanten.edit', $klant->Id) }}" class="inline-flex items-center justify-center rounded bg-kniploket-danger px-4 py-2 text-sm font-medium text-white hover:bg-kniploket-danger-dark transition-colors">Wijzigen</a>
+            <a href="{{ route('klanten.index') }}" class="inline-flex items-center justify-center rounded border border-blue-600 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors">Terug</a>
         </div>
     </div>
 @endsection

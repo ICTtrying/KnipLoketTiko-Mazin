@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Schema;
  * (database/Createscript/SQL_Dag3.sql). Op MySQL is het create-script leidend
  * en bestaat de tabel al; deze migration slaat de aanmaak dan over zodat er
  * nooit een tweede definitie van het schema ontstaat.
+ * 
+ * FIX: Bijzonderheden VARCHAR(50) in plaats van VARCHAR(15)
  */
 return new class extends Migration
 {
@@ -28,7 +30,7 @@ return new class extends Migration
             $table->string('Tussenvoegsel', 30)->nullable();
             $table->string('Achternaam', 100);
             $table->string('Relatienummer', 20);
-            $table->string('Bijzonderheden', 15);
+            $table->string('Bijzonderheden', 50);  // ✅ FIXED: Was 15, nu 50 zoals SQL_Dag3
             $table->boolean('IsActief')->default(true);
             $table->string('Opmerking', 255)->nullable();
             $table->dateTime('DatumAangemaakt');
