@@ -279,34 +279,13 @@ class BehandelingController extends Controller
     /**
      * Haal de detailgegevens van één product op via sp_product_detail.
      */
-    private function haalProductDetailOp(int $productId): object|null
+    private function haalProductDetailOp(int $productId): ?object
     {
         // Als stored procedures worden gebruikt, roep dan de procedure sp_product_detail aan
         if ($this->gebruiktStoredProcedures()) {
             return collect(DB::select('CALL sp_product_detail(?)', [$productId]))->first();
         }
 
-        /* Fallback voor databases die geen stored procedures ondersteunen (zoals MySQL)
-        * De query haalt productdetails op, inclusief voorraad en leverancierinformatie.
-        * De resultaten worden gefilterd op actieve records en gesorteerd op product-ID.
-        */
-
-        return DB::table('Product as p')
-            ->leftJoin('Voorraad as v', function ($join): void {
-                $join->on('v.ProductId', '=', 'p.Id')->where('v.IsActief', '=', 1);
-            })
-            ->leftJoin('LeverancierOrder as lo', function ($join): void {
-                $join->on('lo.ProductId', '=', 'p.Id')
-                    ->where('lo.IsActief', '=', 1)
-                    ->whereRaw('lo.Id = (SELECT lo2.Id FROM LeverancierOrder lo2 WHERE lo2.ProductId = p.Id AND lo2.IsActief = 1 ORDER BY lo2.Orderdatum DESC, lo2.Id DESC LIMIT 1)');
-            })
-            ->leftJoin('Leverancier as l', function ($join): void {
-                $join->on('l.Id', '=', 'lo.LeverancierId')->where('l.IsActief', '=', 1);
-            })
-            ->where('p.Id', $productId)
-            ->where('p.IsActief', 1)
-            ->selectRaw('p.Id AS ProductId, p.Naam, p.Merk, p.Omschrijving, p.EANcode, p.Houdbaarheidsdatum, p.InkoopPrijs, p.VerkoopPrijs, COALESCE(v.AantalOpVoorraad, 0) AS AantalOpVoorraad, l.Naam AS LeverancierNaam, l.Postcode AS LeverancierPostcode, l.Plaats AS LeverancierPlaats, l.Email AS LeverancierEmail, l.Mobiel AS LeverancierMobiel, p.Opmerking')
-            ->first();
     }
 
     

@@ -73,6 +73,7 @@ class KlantController extends Controller
             'Mobiel' => $klant->Mobiel ?? '-',
             'Bijzonderheden' => $klant->Bijzonderheden,
         ]]);
+        
     }
 
     /**
@@ -85,6 +86,7 @@ class KlantController extends Controller
         if ($klant === null) {
             return redirect()->route('klanten.index')->with('error', 'Klant niet gevonden');
         }
+        
 
         return view('klanten.edit', ['klant' => (object) [
             'Id' => $klant->Id,
