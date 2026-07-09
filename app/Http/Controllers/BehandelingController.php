@@ -61,7 +61,7 @@ class BehandelingController extends Controller
 
         // De stored procedure geeft een gewone array terug (geen Eloquent query builder),
         // dus we bouwen de paginatie hier zelf op met de resultaten die we al hebben
-        $perPage = 10;
+        $perPage = 4;
         $huidigePagina = LengthAwarePaginator::resolveCurrentPage();
 
         $behandelingenVoorPagina = collect($behandelingen)
