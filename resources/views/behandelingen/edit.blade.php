@@ -36,32 +36,32 @@
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">Product</label>
                         <input type="text" class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm"
-                            value="{{ $product->Naam }}" readonly>
+                            value="{{ $product->Naam ?? '-' }}" readonly>
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">Merk</label>
                         <input type="text" class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm"
-                            value="{{ $product->Merk }}" readonly>
+                            value="{{ $product->Merk ?? '-' }}" readonly>
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">Omschrijving</label>
                         <input type="text" class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm"
-                            value="{{ $product->Omschrijving }}" readonly>
+                            value="{{ $product->Omschrijving ?? '-' }}" readonly>
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">EAN-code</label>
                         <input type="text" class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm"
-                            value="{{ $product->EANcode }}" readonly>
+                            value="{{ $product->EANcode ?? '-' }}" readonly>
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">Inkoopprijs</label>
                         <input type="text" class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm"
-                            value="EUR {{ number_format((float) $product->InkoopPrijs, 2, ',', '.') }}" readonly>
+                            value="EUR {{ number_format((float) $product->InkoopPrijs, 2, ',', '.' ?? '-') }}" readonly>
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">Aantal op voorraad</label>
                         <input type="text" class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm"
-                            value="{{ $product->AantalOpVoorraad }}" readonly>
+                            value="{{ $product->AantalOpVoorraad ?? '-' }}" readonly>
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">Huidige verkoopprijs</label>
@@ -71,18 +71,18 @@
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">Leverancier</label>
                         <input type="text" class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm"
-                            value="{{ $product->LeverancierNaam }}" readonly>
+                            value="{{ $product->LeverancierNaam ?? '-' }}" readonly>
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">Houdbaarheidsdatum</label>
                         <input type="text" class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm"
-                            value="{{ \Illuminate\Support\Carbon::parse($product->Houdbaarheidsdatum)->format('d-m-Y') }}"
+                            value="{{ \Illuminate\Support\Carbon::parse($product->Houdbaarheidsdatum)->format('d-m-Y') ?? '-' }}"
                             readonly>
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-semibold text-slate-700">Plaats leverancier</label>
                         <input type="text" class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm"
-                            value="{{ $product->LeverancierPlaats }}" readonly>
+                            value="{{ $product->LeverancierPlaats ?? '-' }}" readonly>
                     </div>
                     <div>
                         <label for="nieuwe_verkoopprijs" class="mb-1 block text-sm font-semibold text-slate-700">Nieuwe
@@ -108,7 +108,7 @@
                         <label for="opmerking" class="mb-1 block text-sm font-semibold text-slate-700">Opmerking</label>
                         <input type="text" id="opmerking" name="opmerking"
                             class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm @error('opmerking') border-red-500 @enderror"
-                            value="{{ old('opmerking', $product->Opmerking) }}" maxlength="255" readonly>
+                            value="{{ old('opmerking', $product->Opmerking ?? '-') }}" maxlength="255" readonly>
                         @error('opmerking')
                             <div class="mt-1 text-sm text-red-600">{{ $message }}</div>
                         @enderror

@@ -80,9 +80,9 @@ class BehandelingController extends Controller
             $producten = $this->BehandelingModel->sp_PakProductenPerBehandeling($id);
 
             if (! $producten) {
-                Log::warning('Geen producten gevonden voor behandeling: '.$id);
+                Log::warning('Geen producten gevonden voor behandeling: '.$id. ' (Naam: '.$behandelingnaam.')');
             } else {
-                Log::info('Producten succesvol geladen voor behandeling: '.$id);
+                Log::info('Producten succesvol geladen voor behandeling: '.$id. ' (Naam: '.$behandelingnaam.')');
             }
 
             return view('behandelingen.producten', [
@@ -106,12 +106,12 @@ class BehandelingController extends Controller
             $product = $this->BehandelingModel->sp_PakProductDetail($id);
 
             if (! $product) {
-                Log::warning('Product niet gevonden: '.$id);
+                Log::warning('Product niet gevonden: '.$id . ' (Naam: '.$product->Naam ?? 'Onbekend'.')');
 
                 return redirect()->route('behandelingen.index')->with('error', 'Product niet gevonden.');
             }
 
-            Log::info('Product succesvol geladen: '.$id);
+            Log::info('Product succesvol geladen: '.$id . ' (Naam: '.$product->Naam ?? 'Onbekend'.')');
 
             return view('behandelingen.productdetail', [
                 'title' => 'Productdetail',
@@ -132,12 +132,12 @@ class BehandelingController extends Controller
             $product = $this->BehandelingModel->sp_PakProductDetail($id);
 
             if (! $product) {
-                Log::warning('Product niet gevonden voor bewerking: '.$id);
+                Log::warning('Product niet gevonden voor bewerking: '.$id . ' (Naam: '.$product->Naam ?? 'Onbekend'.')');
 
                 return redirect()->route('behandelingen.index')->with('error', 'Product niet gevonden.');
             }
 
-            Log::info('Product succesvol geladen voor bewerking: '.$id);
+            Log::info('Product succesvol geladen voor bewerking: '.$id . ' (Naam: '.$product->Naam ?? 'Onbekend'.')');
 
             return view('behandelingen.edit', [
                 'title' => 'Behandeling wijzigen',

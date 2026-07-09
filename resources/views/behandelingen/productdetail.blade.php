@@ -31,59 +31,59 @@
                     <tbody class="">
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Product</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->Naam }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->Naam ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Merk</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->Merk }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->Merk ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Omschrijving</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->Omschrijving }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->Omschrijving ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">EAN-code</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->EANcode }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->EANcode ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Houdbaarheidsdatum</th>
-                            <td class="px-4 py-3 text-sm">{{ \Illuminate\Support\Carbon::parse($product->Houdbaarheidsdatum)->format('d-m-Y') }}</td>
+                            <td class="px-4 py-3 text-sm">{{ \Illuminate\Support\Carbon::parse($product->Houdbaarheidsdatum)->format('d-m-Y') ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Inkoopprijs</th>
-                            <td class="px-4 py-3 text-sm">EUR {{ number_format((float) $product->InkoopPrijs, 2, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-sm">EUR {{ number_format((float) $product->InkoopPrijs, 2, ',', '.') ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Verkoopprijs</th>
-                            <td class="px-4 py-3 text-sm">EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-sm">EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Aantal op voorraad</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->AantalOpVoorraad }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->AantalOpVoorraad ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Leverancier</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierNaam }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierNaam ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Postcode leverancier</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierPostcode }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierPostcode ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Plaats leverancier</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierPlaats }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierPlaats ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">E-mail leverancier</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierEmail }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierEmail ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Mobiel leverancier</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierMobiel }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->LeverancierMobiel ?? '-' }}</td>
                         </tr>
                         <tr class="border-t border-slate-200">
                             <th class="px-4 py-3 text-left text-sm font-semibold">Opmerking</th>
-                            <td class="px-4 py-3 text-sm">{{ $product->Opmerking }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $product->Opmerking ?? '-' }}</td>
                         </tr>
                     </tbody>
                 </table>

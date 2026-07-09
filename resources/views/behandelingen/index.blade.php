@@ -67,11 +67,11 @@
                 <tbody>
                     @forelse ($behandelingen as $behandeling)
                         <tr class="border-t border-slate-200 hover:bg-slate-50">
-                            <td class="px-4 py-3">{{ $behandeling->Naam }}</td>
-                            <td class="px-4 py-3">{{ $behandeling->Omschrijving }}</td>
-                            <td class="px-4 py-3">{{ $behandeling->DuurMinuten }} min</td>
-                            <td class="px-4 py-3">EUR {{ number_format((float) $behandeling->Prijs, 2, ',', '.') }}</td>
-                            <td class="px-4 py-3">{{ $behandeling->AantalProducten }}</td>
+                            <td class="px-4 py-3">{{ $behandeling->Naam ?? '-' }}</td>
+                            <td class="px-4 py-3">{{ $behandeling->Omschrijving ?? '-' }}</td>
+                            <td class="px-4 py-3">{{ $behandeling->DuurMinuten ?? '-' }} min</td>
+                            <td class="px-4 py-3">EUR {{ number_format((float) $behandeling->Prijs, 2, ',', '.' ?? '-') }}</td>
+                            <td class="px-4 py-3">{{ $behandeling->AantalProducten ?? '-' }}</td>
                             <td class="px-4 py-3">
                                 <a href="{{ route('behandelingen.producten', $behandeling->BehandelingId) }}" class="inline-flex items-center justify-center rounded border border-blue-600 px-2.5 py-1 text-sm font-medium text-blue-600 hover:bg-blue-50">Producten</a>
                             </td>
