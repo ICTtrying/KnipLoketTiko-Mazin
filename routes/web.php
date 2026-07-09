@@ -15,9 +15,10 @@ Route::prefix('behandelingen')->group(function () {
     Route::get('/', [BehandelingController::class, 'index'])->name('behandelingen.index');
     Route::get('/{behandeling}/producten', [BehandelingController::class, 'producten'])->name('behandelingen.producten');
     Route::get('/producten/{product}/details', [BehandelingController::class, 'productDetail'])->name('behandelingen.product.detail');
-    Route::get('/producten/{product}/wijzigen', [BehandelingController::class, 'wijzigForm'])->name('behandelingen.product.wijzigen');
-    Route::put('/producten/{product}/wijzigen', [BehandelingController::class, 'wijzigOpslaan'])->name('behandelingen.product.opslaan');
+    Route::get('/producten/{product}/edit', [BehandelingController::class, 'edit'])->name('behandelingen.edit');
+    Route::put('/producten/{product}/edit', [BehandelingController::class, 'update'])->name('behandelingen.update');
 });
+
 // Routes voor het productenoverzicht (User Story 07) en productdetail/wijzigen (User Story 08)
 Route::prefix('producten')->name('products.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');

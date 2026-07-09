@@ -43,10 +43,10 @@
 
     {{-- Wireframe-02: resultatenblok in een whitecard onder de filterbalk --}}
     <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <p class="mb-2 text-sm text-slate-500">Gevonden behandelingen - {{ $behandelingen->total() }} behandeling(en)</p>
+        <p class="mb-2 text-sm text-slate-500">Gevonden behandelingen - {{ $behandelingCount }} behandeling(en)</p>
 
         {{-- Wireframe-02: paginering onder de telregel, boven de tabel (verborgen bij 0 resultaten) --}}
-        @if ($behandelingen->total() > 0)
+        @if ($behandelingCount > 0)
             <div class="mb-3">
                 {{ $behandelingen->links('pagination.kniploket') }}
             </div>
@@ -79,7 +79,7 @@
                     @empty
                         {{-- Wireframe-04: gecentreerde melding, tekst exact volgens de user story --}}
                         <tr>
-                            <td colspan="6" class="px-4 py-4 text-center text-slate-500">{{ $legeMelding }}</td>
+                            <td colspan="6" class="px-4 py-4 text-center text-slate-500">Er zijn geen behandelingen bekent met deze naam</td>
                         </tr>
                     @endforelse
                 </tbody>

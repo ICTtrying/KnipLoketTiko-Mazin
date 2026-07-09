@@ -19,7 +19,7 @@
 
     <div class="lg:w-7/12">
         <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-            <form method="POST" action="{{ route('behandelingen.product.opslaan', $product->ProductId) }}">
+            <form method="POST" action="{{ route('behandelingen.update', $product->ProductId) }}">
                 @csrf
                 @method('PUT')
 
@@ -93,9 +93,9 @@
                             type="text"
                             id="opmerking"
                             name="opmerking"
-                            class="w-full rounded border border-slate-300 px-3 py-2 text-sm @error('opmerking') border-red-500 @enderror"
+                            class="w-full rounded border border-slate-300 bg-slate-100 px-3 py-2 text-sm @error('opmerking') border-red-500 @enderror"
                             value="{{ old('opmerking', $product->Opmerking) }}"
-                            maxlength="255"
+                            maxlength="255" readonly
                         >
                         @error('opmerking')
                             <div class="mt-1 text-sm text-red-600">{{ $message }}</div>

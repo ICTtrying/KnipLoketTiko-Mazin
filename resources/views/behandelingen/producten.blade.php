@@ -18,7 +18,7 @@
     {{-- Titel: Deels rood, deels grijs --}}
     <h1 class="mb-3 text-2xl font-bold">
         <span class="titel-kniploket">Producten per behandeling</span>
-        <span class="font-normal text-slate-500">{{ $behandeling->Naam }}</span>
+        <span class="font-normal text-slate-500">{{ $behandelingnaam }}</span>
     </h1>
 
     {{-- Witte kaart om de tabel en knop heen --}}
