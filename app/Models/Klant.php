@@ -1,31 +1,23 @@
 <?php
- 
+
 namespace App\Models;
 
- 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
 
 /**
  * Model voor de tabel Klant.
  *
  * De tabel heeft geen Naam-kolom; de weergavenaam wordt samengesteld uit
- * Voornaam, Tussenvoegsel en Achternaam via de VolledigeNaam-accessor.
- * Relatienummer is een gewone kolom en wordt nooit berekend.
+ * Voornaam, Tussenvoegsel en Achternaam via de volledigeNaam-accessor.
  */
-
 class Klant extends Model
 {
-    use HasFactory;
- 
     protected $table = 'Klant';
+
     protected $primaryKey = 'Id';
-    public $timestamps = false;
- 
+
     protected $fillable = [
         'UserId',
         'Voornaam',
@@ -35,63 +27,24 @@ class Klant extends Model
         'Bijzonderheden',
         'IsActief',
         'Opmerking',
-        'DatumAangemaakt',
-        'DatumGewijzigd'
     ];
 
-/**
- * Relatie: Klant belongs to User
- */
-public function user(): BelongsTo
-{
-    return $this->belongsTo(User::class, 'UserId', 'Id');
-}
+    public const CREATED_AT = 'DatumAangemaakt';
 
-/**
- * Volledige weergavenaam
- */
-protected function volledigeNaam(): Attribute
-{
-    return Attribute::get(fn (): string => collect([$this->Voornaam, $this->Tussenvoegsel, $this->Achternaam])
-        ->filter()
-        ->implode(' '));
-}
-    /**
-     * Relatie: Klant has many KlantPerContact
-     */
-    public function klantPerContact()
+    public const UPDATED_AT = 'DatumGewijzigd';
+
+    public function user(): BelongsTo
     {
-        return $this->hasMany(KlantPerContact::class, 'KlantId', 'Id');
+        return $this->belongsTo(User::class, 'UserId', 'Id');
     }
- 
+
     /**
-     * Get contact through KlantPerContact
+     * Volledige weergavenaam: Voornaam, Tussenvoegsel en Achternaam samengevoegd.
      */
-    public function contacts()
+    protected function volledigeNaam(): Attribute
     {
-        return $this->hasManyThrough(
-            Contact::class,
-            KlantPerContact::class,
-            'KlantId',
-            'Id',
-            'Id',
-            'ContactId'
-        );
-    }
- 
-    /**
-     * Get full name
-     */
-    public function getFullNameAttribute()
-    {
-        $name = $this->Voornaam;
-        
-        if ($this->Tussenvoegsel) {
-            $name .= ' ' . $this->Tussenvoegsel;
-        }
-        
-        $name .= ' ' . $this->Achternaam;
-        
-        return $name;
+        return Attribute::get(fn (): string => collect([$this->Voornaam, $this->Tussenvoegsel, $this->Achternaam])
+            ->filter()
+            ->implode(' '));
     }
 }

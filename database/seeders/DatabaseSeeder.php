@@ -18,9 +18,5 @@ class DatabaseSeeder extends Seeder
         // BehandelingSeeder de voorraad- en behandelingsdata kan koppelen
         $this->call(BestellingSeeder::class);
         $this->call(BehandelingSeeder::class);
-
-        // KlantSeeder als laatste: BestellingSeeder leegt de Klant-tabel,
-        // dus eerder draaien zou deze klanten (en hun contacten) weer verwijderen
-        $this->call(KlantSeeder::class);
     }
 }

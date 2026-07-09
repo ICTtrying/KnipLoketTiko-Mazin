@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class BehandelingController extends Controller
 {
@@ -176,13 +177,32 @@ class BehandelingController extends Controller
                 'nieuwe_verkoopprijs' => 'required|numeric|min:0',
                 'opmerking' => 'nullable|string|max:255',
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             Log::warning('Validatiefout bij bijwerken product: '.$id, ['errors' => $e->errors()]);
 
             return redirect()->back()->withErrors($e->errors())->withInput();
         }
 
         try {
+
+            // Haal eerst het product op om de inkoopprijs te weten te komen
+            $product = $this->BehandelingModel->sp_PakProductDetail($id);
+
+            // Bereken de minimale verkoopprijs (inkoopprijs + 30%)
+            $minimaleVerkoopprijs = (float) $product->InkoopPrijs * 1.30;
+
+            // Volg de foto instructie: controleer of de nieuwe prijs onder de 30% grens ligt
+            if ((float) $validated['nieuwe_verkoopprijs'] < $minimaleVerkoopprijs) {
+                Log::warning('Verkoopprijs te laag opgegeven voor product: '.$id.$product->Naam.'; opgegeven: '.$validated['nieuwe_verkoopprijs'].'; minimaal: '.$minimaleVerkoopprijs);
+
+                return redirect()->back()
+                    ->withErrors([
+                        'nieuwe_verkoopprijs' => 'Verkoopprijs moet minimaal 30 procent boven de inkoopprijs liggen',
+                    ])
+                    ->with('error', 'Gegevens niet bijgewerkt') // Dit activeert jouw @if (session('error')) alert
+                    ->withInput();
+            }
+
             // Werk de verkoopprijs en opmerking bij via de stored procedure
             $this->BehandelingModel->sp_UpdateProductPrijs(
                 $id,
