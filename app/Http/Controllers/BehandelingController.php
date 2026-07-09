@@ -21,201 +21,178 @@ class BehandelingController extends Controller
         $this->BehandelingModel = new Behandeling;
     }
 
-    // Haal alle behandelingen op en toon de overzichtspagina, met optioneel
-    // een filter op behandelnaam via de select in het formulier
+    // Haal alle behandelingen op en toon de overzichtspagina
     public function index(Request $request)
     {
         try {
-            // Haal eerst alle behandelingen ongefilterd op; deze lijst gebruiken we
-            // zowel als standaardweergave als om de namen voor de select te bepalen
             $alleBehandelingen = $this->BehandelingModel->sp_PakAlleBehandelingen('Alle behandelingen');
             $behandelingNamen = collect($alleBehandelingen)->pluck('Naam')->unique()->values();
-        } catch (\Exception $e) {
-            // Vang onverwachte fouten op bij het ophalen van de behandelingen
-            Log::error('Fout bij laden behandelingen: '.$e->getMessage());
 
-        }
+            // Direct valideren
+            $validatedData = $request->validate([
+                'behandeling' => ['nullable', 'string', Rule::in($behandelingNamen->concat(['Alle behandelingen', 'Overig']))],
+            ]);
 
-        // Server-side spiegel van de select-opties: alleen 'Alle behandelingen',
-        // 'Overig' of een bestaande behandelnaam zijn geldig
-        $validatedData = $request->validate([
-            'behandeling' => ['nullable', 'string', Rule::in($behandelingNamen->concat(['Alle behandelingen', 'Overig']))],
-        ]);
+            $geselecteerdeBehandeling = $validatedData['behandeling'] ?? 'Alle behandelingen';
 
-        // Zonder keuze (of expliciet 'Alle behandelingen') tonen we de volledige lijst
-        $geselecteerdeBehandeling = $validatedData['behandeling'] ?? 'Alle behandelingen';
-
-        try {
-            // 'Overig' matcht bewust op geen enkele behandeling (scenario 2): de
-            // stored procedure filtert dan op een naam die niet bestaat, en geeft
-            // dus terecht een lege lijst terug
             $behandelingen = $geselecteerdeBehandeling === 'Alle behandelingen'
                 ? $alleBehandelingen
                 : $this->BehandelingModel->sp_PakAlleBehandelingen($geselecteerdeBehandeling);
 
             Log::info('Behandelingen succesvol geladen', ['behandeling' => $geselecteerdeBehandeling]);
+
+            // Bouw de paginatie direct op
+            $huidigePagina = LengthAwarePaginator::resolveCurrentPage();
+            $behandelingenGepagineerd = new LengthAwarePaginator(
+                collect($behandelingen)->forPage($huidigePagina, 4)->values(),
+                count($behandelingen),
+                4,
+                $huidigePagina,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+
+            // Direct de succesvolle view retourneren vanuit de try
+            return view('behandelingen.index', [
+                'title' => 'Behandelingen overzicht',
+                'behandelingen' => $behandelingenGepagineerd,
+                'behandelingCount' => count($behandelingen),
+                'behandelingNamen' => $behandelingNamen,
+                'geselecteerdeBehandeling' => $geselecteerdeBehandeling,
+            ]);
+
+        } catch (ValidationException $e) {
+            Log::warning('Validatiefout bij behandelingenfilter', ['errors' => $e->errors()]);
+
+            return redirect()->route('behandelingen.index')->withErrors($e->errors());
         } catch (\Exception $e) {
             Log::error('Fout bij laden behandelingen: '.$e->getMessage());
-
         }
 
-        // De stored procedure geeft een gewone array terug (geen Eloquent query builder),
-        // dus we bouwen de paginatie hier zelf op met de resultaten die we al hebben
-        $perPage = 4;
-        $huidigePagina = LengthAwarePaginator::resolveCurrentPage();
-
-        $behandelingenVoorPagina = collect($behandelingen)
-            ->forPage($huidigePagina, $perPage)
-            ->values();
-
-        $behandelingenGepagineerd = new LengthAwarePaginator(
-            $behandelingenVoorPagina,
-            count($behandelingen),
-            $perPage,
-            $huidigePagina,
-            [
-                'path' => $request->url(),
-                'query' => $request->query(),
-            ]
-        );
-
-        // Stuur de behandelingen, de dropdown-namen en de huidige selectie door naar de view
-        return view('behandelingen.index', [
-            'title' => 'Behandelingen overzicht',
-            'behandelingen' => $behandelingenGepagineerd,
-            'behandelingCount' => count($behandelingen),
-            'behandelingNamen' => $behandelingNamen,
-            'geselecteerdeBehandeling' => $geselecteerdeBehandeling,
-        ]);
+        // Één centrale fout-return buiten de try-catch (geen return IN de catch)
+        return redirect()->route('behandelingen.index')->with('error', 'Fout bij het laden van de behandelingen.');
     }
 
     // Toon alle producten die bij een specifieke behandeling horen
     public function producten($id)
     {
         try {
-            // Zoek de producten op via het opgegeven behandeling-ID
             $behandelingnaam = $this->BehandelingModel->find($id, ['Naam'])->Naam ?? 'Onbekend';
             $producten = $this->BehandelingModel->sp_PakProductenPerBehandeling($id);
 
-            // Als er geen producten zijn, log een waarschuwing maar toon wel de (lege) pagina
             if (! $producten) {
                 Log::warning('Geen producten gevonden voor behandeling: '.$id);
             } else {
                 Log::info('Producten succesvol geladen voor behandeling: '.$id);
             }
 
-        } catch (\Exception $e) {
-            // Vang onverwachte fouten op bij het ophalen van de producten
-            Log::error('Fout bij laden producten per behandeling: '.$e->getMessage());
+            return view('behandelingen.producten', [
+                'title' => 'Producten per behandeling',
+                'producten' => $producten,
+                'behandelingId' => $id,
+                'behandelingnaam' => $behandelingnaam,
+            ]);
 
+        } catch (\Exception $e) {
+            Log::error('Fout bij laden producten per behandeling: '.$e->getMessage());
         }
 
-        // Stuur de producten door naar de bijbehorende view
-        return view('behandelingen.producten', [
-            'title' => 'Producten per behandeling',
-            'producten' => $producten,
-            'behandelingId' => $id,
-            'behandelingnaam' => $behandelingnaam,
-        ]);
+        return redirect()->route('behandelingen.index')->with('error', 'Fout bij het laden van de producten.');
     }
 
     // Toon de detailpagina van één specifiek product
     public function productDetail($id)
     {
         try {
-            // Zoek het product op via het opgegeven product-ID
             $product = $this->BehandelingModel->sp_PakProductDetail($id);
 
-            // Als het product niet bestaat, log een waarschuwing en stuur terug met foutmelding
             if (! $product) {
                 Log::warning('Product niet gevonden: '.$id);
 
                 return redirect()->route('behandelingen.index')->with('error', 'Product niet gevonden.');
             }
 
-            // Product succesvol geladen, log ter bevestiging
             Log::info('Product succesvol geladen: '.$id);
-        } catch (\Exception $e) {
-            // Vang onverwachte fouten op bij het ophalen van het product
-            Log::error('Fout bij laden productdetail: '.$e->getMessage());
 
-            return redirect()->route('behandelingen.index')->with('error', 'Fout bij het laden van het product.');
+            return view('behandelingen.productdetail', [
+                'title' => 'Productdetail',
+                'product' => $product,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Fout bij laden productdetail: '.$e->getMessage());
         }
 
-        // Stuur de productdata door naar de detail-view
-        return view('behandelingen.productdetail', [
-            'title' => 'Productdetail',
-            'product' => $product,
-        ]);
-
+        return redirect()->route('behandelingen.index')->with('error', 'Fout bij het laden van het product.');
     }
 
+    // Toon het wijzigformulier voor de verkoopprijs van een product
     public function edit($id)
     {
         try {
             $product = $this->BehandelingModel->sp_PakProductDetail($id);
 
+            if (! $product) {
+                Log::warning('Product niet gevonden voor bewerking: '.$id);
+
+                return redirect()->route('behandelingen.index')->with('error', 'Product niet gevonden.');
+            }
+
             Log::info('Product succesvol geladen voor bewerking: '.$id);
+
+            return view('behandelingen.edit', [
+                'title' => 'Behandeling wijzigen',
+                'behandelingId' => $id,
+                'product' => $product,
+            ]);
+
         } catch (\Exception $e) {
             Log::error('Fout bij laden product voor bewerking: '.$e->getMessage());
-
-            return redirect()->route('behandelingen.index')->with('error', 'Fout bij het laden van het product.');
         }
 
-        return view('behandelingen.edit', [
-            'title' => 'Behandeling wijzigen',
-            'behandelingId' => $id,
-            'product' => $product,
-        ]);
+        return redirect()->route('behandelingen.index')->with('error', 'Fout bij het laden van het product.');
     }
 
+    // Verwerk het formulier om de productprijs en opmerking aan te passen
     public function update(Request $request, $id)
     {
-        // Valideer de inkomende gegevens
         try {
             $validated = $request->validate([
                 'nieuwe_verkoopprijs' => 'required|numeric|min:0',
                 'opmerking' => 'nullable|string|max:255',
             ]);
+
+            $product = $this->BehandelingModel->sp_PakProductDetail($id);
+
+            if (! $product) {
+                Log::warning('Product niet gevonden bij bijwerken: '.$id);
+
+                return redirect()->route('behandelingen.index')->with('error', 'Product niet gevonden.');
+            }
+
+            // Direct controleren tegen de 30% regel
+            if ((float) $validated['nieuwe_verkoopprijs'] < ((float) $product->InkoopPrijs * 1.30)) {
+                Log::warning('Verkoopprijs te laag opgegeven voor product: '.$id);
+
+                return redirect()->back()
+                    ->withErrors(['nieuwe_verkoopprijs' => 'Verkoopprijs moet minimaal 30 procent boven de inkoopprijs liggen'])
+                    ->with('error', 'Gegevens niet bijgewerkt')
+                    ->withInput();
+            }
+
+            $this->BehandelingModel->sp_UpdateProductPrijs($id, $validated['nieuwe_verkoopprijs'], $validated['opmerking']);
+            Log::info('Product succesvol bijgewerkt: '.$id);
+
+            return redirect()->route('behandelingen.product.detail', ['product' => $id])->with('success', 'Product succesvol bijgewerkt.');
+
         } catch (ValidationException $e) {
             Log::warning('Validatiefout bij bijwerken product: '.$id, ['errors' => $e->errors()]);
 
             return redirect()->back()->withErrors($e->errors())->withInput();
-        }
-
-        try {
-
-            // Haal eerst het product op om de inkoopprijs te weten te komen
-            $product = $this->BehandelingModel->sp_PakProductDetail($id);
-
-            // Bereken de minimale verkoopprijs (inkoopprijs + 30%)
-            $minimaleVerkoopprijs = (float) $product->InkoopPrijs * 1.30;
-
-            // Volg de foto instructie: controleer of de nieuwe prijs onder de 30% grens ligt
-            if ((float) $validated['nieuwe_verkoopprijs'] < $minimaleVerkoopprijs) {
-                Log::warning('Verkoopprijs te laag opgegeven voor product: '.$id.$product->Naam.'; opgegeven: '.$validated['nieuwe_verkoopprijs'].'; minimaal: '.$minimaleVerkoopprijs);
-
-                return redirect()->back()
-                    ->withErrors([
-                        'nieuwe_verkoopprijs' => 'Verkoopprijs moet minimaal 30 procent boven de inkoopprijs liggen',
-                    ])
-                    ->with('error', 'Gegevens niet bijgewerkt') // Dit activeert jouw @if (session('error')) alert
-                    ->withInput();
-            }
-
-            // Werk de verkoopprijs en opmerking bij via de stored procedure
-            $this->BehandelingModel->sp_UpdateProductPrijs(
-                $id,
-                $validated['nieuwe_verkoopprijs'],
-                $validated['opmerking']
-            );
-
-            Log::info('Product succesvol bijgewerkt: '.$id);
         } catch (\Exception $e) {
             Log::error('Fout bij bijwerken product: '.$e->getMessage());
-
         }
 
-        return redirect()->route('behandelingen.product.detail', ['product' => $id])->with('success', 'Product succesvol bijgewerkt.');
+        // Fallback return als er in de try een database of serverfout optreedt
+        return redirect()->back()->with('error', 'Fout bij het bijwerken van het product.')->withInput();
     }
 }
