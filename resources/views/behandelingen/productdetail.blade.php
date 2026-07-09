@@ -14,6 +14,13 @@
         </ol>
     </nav>
 
+    @if (session('success'))
+        {{-- Alleen de algemene melding; veldspecifieke fouten staan bij het veld zelf --}}
+        <div class="mb-4 rounded border border-emerald-300 w-140 bg-emerald-100 px-4 py-3 text-emerald-900" role="alert">
+            {{ session('success') }}
+        </div>
+    @endif
+
     {{-- Alleen het statische tekstgedeelte is rood; de productnaam is grijs --}}
     <h1 class="mb-3 text-2xl font-bold"><span class="titel-kniploket">Productdetail</span> <span class="font-normal text-slate-500">{{ $product->Naam }}</span></h1>
 
